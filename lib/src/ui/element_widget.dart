@@ -181,8 +181,22 @@ class _ElementWidgetState extends State<ElementWidget> {
         child: Stack(
           children: [
             element,
-            if (widget.element.isResizable) _buildResizeHandle(),
-            if (widget.element.isDeletable) _buildDeleteHandle(),
+            if (widget.element.isResizable)
+              Positioned(
+                right: 8.0,
+                bottom: 8.0,
+                child: _buildResizeHandle(),
+              ),
+            if (widget.element.isDeletable)
+              Positioned(
+                left: 8.0,
+                bottom: 8.0,
+                child: _buildDeleteHandle(
+                      () {
+                    widget.onElementPressed?.call(context, tapLocation);
+                  },
+                ),
+              ),
           ],
         ),
       ),
@@ -204,25 +218,26 @@ class _ElementWidgetState extends State<ElementWidget> {
       child: const Align(
         alignment: Alignment.bottomRight,
         child: HandlerWidget(
-          width: 30,
-          height: 30,
+          width: 25,
+          height: 25,
           icon: Icon(Icons.compare_arrows),
         ),
       ),
     );
   }
 
-  Widget _buildDeleteHandle() {
+  Widget _buildDeleteHandle(Function() itemClick) {
     return Listener(
       onPointerUp: (event) {
-        widget.dashboard.removeElement(widget.element);
+        //widget.dashboard.removeElement(widget.element);
+        itemClick();
       },
       child: const Align(
         alignment: Alignment.bottomLeft,
         child: HandlerWidget(
-          width: 30,
-          height: 30,
-          icon: Icon(Icons.delete_outline),
+          width: 25,
+          height: 25,
+          icon: Icon(Icons.menu),
         ),
       ),
     );

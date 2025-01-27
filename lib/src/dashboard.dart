@@ -163,6 +163,16 @@ class Dashboard extends ChangeNotifier {
     if (notify) notifyListeners();
   }
 
+  /// set [deletable] element property
+  void setElementDeleteable(
+      FlowElement element,
+      bool deletable, {
+        bool notify = true,
+      }) {
+    element.isDeletable = deletable;
+    if (notify) notifyListeners();
+  }
+
   /// add a [FlowElement] to the dashboard
   void addElement(FlowElement element, {bool notify = true, int? position}) {
     if (element.id.isEmpty) {
