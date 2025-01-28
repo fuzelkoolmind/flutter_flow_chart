@@ -8,7 +8,8 @@ class GridBackgroundParams extends ChangeNotifier {
     this.gridThickness = 0.7,
     this.secondarySquareStep = 5,
     this.backgroundColor = Colors.white,
-    this.gridColor = Colors.black12,
+    this.gridColor = Colors.white,
+    //this.gridColor = Colors.black12,
     void Function(double scale)? onScaleUpdate,
   }) : rawGridSquareSize = gridSquare {
     if (onScaleUpdate != null) {
