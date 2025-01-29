@@ -5,6 +5,9 @@ import 'package:flutter_flow_chart/src/ui/draw_arrow.dart';
 import 'package:flutter_flow_chart/src/ui/handler_widget.dart';
 
 /// Draw handlers over the element
+
+var isDragging = true;
+
 class ElementHandlers extends StatelessWidget {
   ///
   const ElementHandlers({
@@ -135,7 +138,7 @@ class _ElementHandler extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var isDragging = false;
+    isDragging = false;
 
     Alignment alignment;
     switch (handler) {
@@ -252,6 +255,7 @@ class _ElementHandler extends StatelessWidget {
               );
             },
             onDragEnd: (details) {
+              print('DragEnd Details: ${details.toString()} ${handler.name}');
               DrawingArrow.instance.reset();
               isDragging = false;
             },

@@ -231,6 +231,7 @@ class _DrawArrowState extends State<DrawArrow> {
   Widget build(BuildContext context) {
     var from = Offset.zero;
     var to = Offset.zero;
+    var direction = 'Empty';
 
     from = Offset(
       widget.srcElement.position.dx +
@@ -253,6 +254,8 @@ class _DrawArrowState extends State<DrawArrow> {
               ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
     );
 
+    direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
+
     return RepaintBoundary(
       child: Builder(
         builder: (context) {
@@ -262,12 +265,27 @@ class _DrawArrowState extends State<DrawArrow> {
               from: from,
               to: to,
               pivots: widget.pivots.value,
+              direction: direction
             ),
             child: Container(),
           );
         },
       ),
     );
+  }
+
+  String getOffsetDirection(Offset to, Offset boxPosition, Size boxSize) {
+    final double centerX = boxPosition.dx + boxSize.width / 2;
+    final double centerY = boxPosition.dy + boxSize.height / 2;
+
+    final double deltaX = to.dx - centerX;
+    final double deltaY = to.dy - centerY;
+
+    if (deltaX.abs() > deltaY.abs()) {
+      return deltaX > 0 ? "Right" : "Left"; // More horizontal movement
+    } else {
+      return deltaY > 0 ? "Bottom" : "Top"; // More vertical movement
+    }
   }
 }
 
@@ -280,6 +298,7 @@ class ArrowPainter extends CustomPainter {
     required this.params,
     required this.from,
     required this.to,
+    required this.direction,
     List<Pivot>? pivots,
   }) : pivots = pivots ?? [];
 
@@ -301,9 +320,14 @@ class ArrowPainter extends CustomPainter {
   ///
   final List<Pivot> pivots;
 
+  var direction;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..strokeWidth = params.thickness;
+    final paint = Paint()
+      ..strokeWidth = params.thickness
+      ..color = params.color
+      ..style = PaintingStyle.stroke;
 
     if (params.style == ArrowStyle.curve) {
       drawCurve(canvas, paint);
@@ -313,12 +337,111 @@ class ArrowPainter extends CustomPainter {
       drawRectangularLine(canvas, paint);
     }
 
-    canvas.drawCircle(to, params.headRadius, paint);
+    // Draw the arrowhead pointing downward
 
-    paint
-      ..color = params.color
-      ..style = PaintingStyle.stroke;
+    if(direction == 'Left'){
+      drawRightArrowHead(canvas, paint);
+    }else if(direction == 'Right'){
+      drawLeftArrowHead(canvas, paint);
+    }else if(direction == 'Bottom'){
+      drawTopArrowHead(canvas, paint);
+    }else if(direction == 'Top'){
+      drawBottomArrowHead(canvas, paint);
+    }else {
+      drawCircleAtEnd(canvas, paint);
+    }
+
+
+    paint.style = PaintingStyle.stroke;
     canvas.drawPath(path, paint);
+  }
+
+  /// Draw a bottom-facing arrowhead
+  void drawBottomArrowHead(Canvas canvas, Paint paint) {
+    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
+
+    // Calculate the arrowhead points
+    final arrowTip = to; // The tip of the arrow
+    final arrowLeft = Offset(to.dx - arrowHeadSize, to.dy - arrowHeadSize);
+    final arrowRight = Offset(to.dx + arrowHeadSize, to.dy - arrowHeadSize);
+
+    // Draw the arrowhead as a triangle
+    final arrowHeadPath = Path()
+      ..moveTo(arrowTip.dx, arrowTip.dy)
+      ..lineTo(arrowLeft.dx, arrowLeft.dy)
+      ..lineTo(arrowRight.dx, arrowRight.dy)
+      ..close();
+
+    // Fill the arrowhead
+    paint.style = PaintingStyle.fill;
+    canvas.drawPath(arrowHeadPath, paint);
+  }
+
+  void drawTopArrowHead(Canvas canvas, Paint paint) {
+    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
+
+    // Calculate the arrowhead points
+    final arrowTip = to; // The tip of the arrow (now pointing upwards)
+    final arrowLeft = Offset(to.dx - arrowHeadSize, to.dy + arrowHeadSize);
+    final arrowRight = Offset(to.dx + arrowHeadSize, to.dy + arrowHeadSize);
+
+    // Draw the arrowhead as a triangle
+    final arrowHeadPath = Path()
+      ..moveTo(arrowTip.dx, arrowTip.dy)
+      ..lineTo(arrowLeft.dx, arrowLeft.dy)
+      ..lineTo(arrowRight.dx, arrowRight.dy)
+      ..close();
+
+    // Fill the arrowhead
+    paint.style = PaintingStyle.fill;
+    canvas.drawPath(arrowHeadPath, paint);
+  }
+
+  void drawLeftArrowHead(Canvas canvas, Paint paint) {
+    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
+
+    // Calculate the arrowhead points
+    final arrowTip = to; // The tip of the arrow (now pointing left)
+    final arrowTop = Offset(to.dx + arrowHeadSize, to.dy - arrowHeadSize);
+    final arrowBottom = Offset(to.dx + arrowHeadSize, to.dy + arrowHeadSize);
+
+    // Draw the arrowhead as a triangle
+    final arrowHeadPath = Path()
+      ..moveTo(arrowTip.dx, arrowTip.dy)
+      ..lineTo(arrowTop.dx, arrowTop.dy)
+      ..lineTo(arrowBottom.dx, arrowBottom.dy)
+      ..close();
+
+    // Fill the arrowhead
+    paint.style = PaintingStyle.fill;
+    canvas.drawPath(arrowHeadPath, paint);
+  }
+
+  void drawRightArrowHead(Canvas canvas, Paint paint) {
+    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
+
+    // Calculate the arrowhead points
+    final arrowTip = to; // The tip of the arrow (now pointing right)
+    final arrowTop = Offset(to.dx - arrowHeadSize, to.dy - arrowHeadSize);
+    final arrowBottom = Offset(to.dx - arrowHeadSize, to.dy + arrowHeadSize);
+
+    // Draw the arrowhead as a triangle
+    final arrowHeadPath = Path()
+      ..moveTo(arrowTip.dx, arrowTip.dy)
+      ..lineTo(arrowTop.dx, arrowTop.dy)
+      ..lineTo(arrowBottom.dx, arrowBottom.dy)
+      ..close();
+
+    // Fill the arrowhead
+    paint.style = PaintingStyle.fill;
+    canvas.drawPath(arrowHeadPath, paint);
+  }
+
+  void drawCircleAtEnd(Canvas canvas, Paint paint) {
+    final double circleRadius = params.headRadius * 1.5; // Adjust the size
+
+    // Draw the circle at the 'to' position
+    canvas.drawCircle(to, circleRadius, paint);
   }
 
   /// Draw a segmented line with a tension between points.

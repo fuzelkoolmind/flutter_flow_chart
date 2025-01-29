@@ -244,6 +244,9 @@ class _FlowChartState extends State<FlowChart> {
 
                 widget.dashboard.gridBackgroundParams.offset =
                     details.focalPointDelta;
+
+                // remove drawpath
+                DrawingArrow.instance.reset();
                 setState(() {});
               },
               onScaleEnd: (details) {
@@ -397,6 +400,7 @@ class _DrawingArrowWidgetState extends State<DrawingArrowWidget> {
         params: DrawingArrow.instance.params,
         from: DrawingArrow.instance.from,
         to: DrawingArrow.instance.to,
+        direction: 'Empty'
       ),
     );
   }
