@@ -41,12 +41,19 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
 
     var data1;
     String date = '';
-    if(widget.element.data != null){
-      String moreData = widget.element.data as String;
-      data1 = jsonDecode(moreData);
-      date = data1['created_at'] as String;
-
+    try{
+      if(widget.element.data != null){
+        print('JSON Parse Data: ${widget.element.data}');
+        String moreData = widget.element.data as String;
+        data1 = jsonDecode(moreData);
+        date = data1['created_at'] as String;
+        print('JSON Parse Error: $date');
+      }
+    }catch(e, stack){
+      print('JSON Parse Error: ${e.toString()}');
+      print('JSON Parse Stack: $stack');
     }
+
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
