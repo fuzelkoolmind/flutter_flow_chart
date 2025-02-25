@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 
@@ -37,21 +39,48 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
       fontFamily: widget.element.fontFamily,
     );
 
-    return Align(
-      child: widget.element.isEditingText
-          ? TextFormField(
-              controller: _controller,
-              autofocus: true,
-              onTapOutside: (event) => dismissTextEditor(),
-              onFieldSubmitted: dismissTextEditor,
+    var data1;
+    String date = '';
+    if(widget.element.data != null){
+      String moreData = widget.element.data as String;
+      data1 = jsonDecode(moreData);
+      date = data1['created_at'] as String;
+
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Align(
+          child: widget.element.isEditingText
+              ? TextFormField(
+            controller: _controller,
+            autofocus: true,
+            onTapOutside: (event) => dismissTextEditor(),
+            onFieldSubmitted: dismissTextEditor,
+            textAlign: TextAlign.center,
+            style: textStyle,
+          )
+              : Text(
+            widget.element.text,
+            textAlign: TextAlign.center,
+            style: textStyle.copyWith(fontSize: 11.0),
+          ),
+        ),
+        SizedBox(height: widget.element.data != null ? 2.0 : 0.0,),
+        if (widget.element.data != null) Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              date,
               textAlign: TextAlign.center,
-              style: textStyle,
+              style: textStyle.copyWith(fontSize: 11.0),
             )
-          : Text(
-              widget.element.text,
-              textAlign: TextAlign.center,
-              style: textStyle,
-            ),
+          ],
+        )
+      ],
     );
   }
 
