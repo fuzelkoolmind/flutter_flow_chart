@@ -35,7 +35,7 @@ class ArrowParams extends ChangeNotifier {
     return ArrowParams(
       thickness: map['thickness'] as double,
       headRadius: map['headRadius'] as double? ?? 6.0,
-      tailLength: map['tailLength'] as double? ?? 25.0,
+      tailLength: map['tailLength'] as double? ?? 35.0,
       color: Color(map['color'] as int),
       style: ArrowStyle.values[map['style'] as int? ?? 0],
       tension: map['tension'] as double? ?? 1,
