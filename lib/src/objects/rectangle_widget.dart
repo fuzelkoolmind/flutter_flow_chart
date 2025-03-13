@@ -19,23 +19,26 @@ class RectangleWidget extends StatelessWidget {
       width: element.size.width,
       height: element.size.height,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Container(
+            width: element.size.width,
+            height: element.size.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: element.backgroundColor,
-              boxShadow: [
-                if (element.elevation > 0.01)
-                  BoxShadow(
-                    color: Colors.grey,
-                    offset: Offset(element.elevation, element.elevation),
-                    blurRadius: element.elevation * 1.3,
-                  ),
-              ],
               border: Border.all(
                 color: element.borderColor,
                 width: element.borderThickness,
               ),
+            ),
+          ),
+          Positioned(
+            right: -8.0,
+            top: -8.0,
+            child: Icon(
+              Icons.remove_circle,
+              color: Colors.red,
             ),
           ),
           ElementTextWidget(element: element),

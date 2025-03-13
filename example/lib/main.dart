@@ -366,7 +366,7 @@ class _MyHomePageState extends State<MyHomePage> {
               dashboard.addElement(
                 FlowElement(
                   position: position,
-                  size: const Size(100, 50),
+                  size: const Size(80, 80),
                   text: '${dashboard.elements.length}',
                   handlerSize: 25,
                   // ignore: avoid_redundant_argument_values
@@ -377,6 +377,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     Handler.leftCenter,
                     Handler.rightCenter,
                   ],
+                  borderColor: Color(0xff6C727899).withOpacity(0.60),
+                  borderThickness: 0.85,
                 ),
               );
             },

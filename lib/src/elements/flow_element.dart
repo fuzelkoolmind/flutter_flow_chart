@@ -68,6 +68,7 @@ class FlowElement extends ChangeNotifier {
     this.size = Size.zero,
     this.text = '',
     this.textColor = Colors.black,
+    this.boxBorderColor = Colors.black,
     this.fontFamily,
     this.textSize = 24,
     this.textIsBold = false,
@@ -105,6 +106,7 @@ class FlowElement extends ChangeNotifier {
       size: Size(map['size.width'] as double, map['size.height'] as double),
       text: map['text'] as String,
       textColor: Color(map['textColor'] as int),
+      boxBorderColor: Color(map['boxBorderColor'] as int),
       fontFamily: map['fontFamily'] as String?,
       textSize: map['textSize'] as double,
       textIsBold: map['textIsBold'] as bool,
@@ -158,6 +160,8 @@ class FlowElement extends ChangeNotifier {
 
   /// Text color
   Color textColor;
+
+  Color boxBorderColor;
 
   /// Text font family
   String? fontFamily;
@@ -257,6 +261,12 @@ class FlowElement extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set text color
+  void setCoxBorderColor(Color color) {
+    boxBorderColor = color;
+    notifyListeners();
+  }
+
   /// Set text font family
   void setFontFamily(String? fontFamily) {
     this.fontFamily = fontFamily;
@@ -326,6 +336,7 @@ class FlowElement extends ChangeNotifier {
         size.hashCode ^
         text.hashCode ^
         textColor.hashCode ^
+    boxBorderColor.hashCode ^
         fontFamily.hashCode ^
         textSize.hashCode ^
         textIsBold.hashCode ^
@@ -352,6 +363,7 @@ class FlowElement extends ChangeNotifier {
       'size.height': size.height,
       'text': text,
       'textColor': textColor.value,
+      'boxBorderColor': boxBorderColor.value,
       'fontFamily': fontFamily,
       'textSize': textSize,
       'textIsBold': textIsBold,
