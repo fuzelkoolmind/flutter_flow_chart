@@ -190,7 +190,8 @@ class _ElementHandler extends StatelessWidget {
             childWhenDragging: HandlerWidget(
               width: handlerSize,
               height: handlerSize,
-              backgroundColor: Colors.blue,
+              //backgroundColor: Colors.blue,
+              backgroundColor: const Color(0xff6C727899),
             ),
             data: {
               'srcElement': element,
