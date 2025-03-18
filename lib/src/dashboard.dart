@@ -640,14 +640,20 @@ class Dashboard extends ChangeNotifier {
       source['dashboardSizeHeight'] as double,
     );
 
-    final loadedElements = List<FlowElement>.from(
-      (source['elements'] as List<dynamic>).map<FlowElement>(
-        (x) => FlowElement.fromMap(x as Map<String, dynamic>),
-      ),
-    );
-    elements
-      ..clear()
-      ..addAll(loadedElements);
+    try{
+      final loadedElements = List<FlowElement>.from(
+        (source['elements'] as List<dynamic>).map<FlowElement>(
+              (x) => FlowElement.fromMap(x as Map<String, dynamic>),
+        ),
+      );
+      elements
+        ..clear()
+        ..addAll(loadedElements);
+    }catch(e, stack){
+      print('loadDashboardData Error: ${e.toString()}');
+      print(stack.toString());
+    }
+
 
     recenter();
   }
