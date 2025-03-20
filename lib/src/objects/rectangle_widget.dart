@@ -38,7 +38,8 @@ class RectangleWidget extends StatelessWidget {
             top: -8.0,
             child: Icon(
               Icons.remove_circle,
-              color: Colors.red,
+              color: Colors.black,
+              size: 18.0,
             ),
           ),
           ElementTextWidget(element: element),

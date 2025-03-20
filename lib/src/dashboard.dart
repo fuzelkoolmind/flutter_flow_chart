@@ -602,6 +602,7 @@ class Dashboard extends ChangeNotifier {
       final currentDeviation = elements.first.position - center;
       for (final element in elements) {
         element.position -= currentDeviation;
+        setElementResizable(element, true);
         for (final next in element.next) {
           for (final pivot in next.pivots) {
             pivot.pivot -= currentDeviation;
