@@ -28,7 +28,7 @@ class GridBackgroundParams extends ChangeNotifier {
       // backgroundColor: Color(map['backgroundColor'] as int? ?? 0xFFFFFFFF),
       // gridColor: Color(map['gridColor'] as int? ?? 0xFFFFFFFF),
       backgroundColor: Color(0x00FFFFFF),
-      gridColor: Color(0xFFFFFFFF),
+      gridColor: Color(0x00FFFFFF),
     )
       ..scale = map['scale'] as double? ?? 1.0
       .._offset = Offset(
@@ -157,14 +157,16 @@ class _GridBackgroundPainter extends CustomPainter {
     final paint = Paint();
 
     // Background
-    paint.color = params.backgroundColor;
+    //paint.color = params.backgroundColor;
+    paint.color = Color(0x00FFFFFF);
     canvas.drawRect(
       Rect.fromPoints(const Offset(0, 0), Offset(size.width, size.height)),
       paint,
     );
 
     // grid
-    paint.color = params.gridColor;
+    //paint.color = params.gridColor;
+    paint.color = Color(0x00FFFFFF);
     paint.style = PaintingStyle.stroke;
 
     // Calculate the starting points for x and y
