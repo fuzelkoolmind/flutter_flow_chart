@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 /// The arrow tip.
 class HandlerWidget extends StatelessWidget {
   ///
-  const HandlerWidget({
+   const HandlerWidget({
     required this.width,
     required this.height,
     super.key,
     this.backgroundColor = Colors.white,
-    this.borderColor = Colors.blue,
+    //this.borderColor = Colors.blue,
+    this.borderColor = const Color(0xff6C727899),
     this.icon,
   });
 

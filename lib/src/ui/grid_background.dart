@@ -7,8 +7,10 @@ class GridBackgroundParams extends ChangeNotifier {
     double gridSquare = 20.0,
     this.gridThickness = 0.7,
     this.secondarySquareStep = 5,
-    this.backgroundColor = Colors.white,
-    this.gridColor = Colors.white,
+    // this.backgroundColor = Colors.white,
+    // this.gridColor = Colors.white,
+    this.backgroundColor = Colors.transparent,
+    this.gridColor = Colors.transparent,
     //this.gridColor = Colors.black12,
     void Function(double scale)? onScaleUpdate,
   }) : rawGridSquareSize = gridSquare {
@@ -23,8 +25,10 @@ class GridBackgroundParams extends ChangeNotifier {
       gridSquare: map['gridSquare'] as double? ?? 20.0,
       gridThickness: map['gridThickness'] as double? ?? 0.7,
       secondarySquareStep: map['secondarySquareStep'] as int? ?? 5,
-      backgroundColor: Color(map['backgroundColor'] as int? ?? 0xFFFFFFFF),
-      gridColor: Color(map['gridColor'] as int? ?? 0xFFFFFFFF),
+      // backgroundColor: Color(map['backgroundColor'] as int? ?? 0xFFFFFFFF),
+      // gridColor: Color(map['gridColor'] as int? ?? 0xFFFFFFFF),
+      backgroundColor: Color(0x00FFFFFF),
+      gridColor: Color(0xFFFFFFFF),
     )
       ..scale = map['scale'] as double? ?? 1.0
       .._offset = Offset(
@@ -46,7 +50,7 @@ class GridBackgroundParams extends ChangeNotifier {
   final int secondarySquareStep;
 
   /// Grid background color.
-  final Color backgroundColor;
+  late final Color backgroundColor;
 
   /// Grid lines color.
   final Color gridColor;
