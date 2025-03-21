@@ -122,7 +122,10 @@ class _ElementWidgetState extends State<ElementWidget> {
       case ElementKind.hexagon:
         element = HexagonWidget(element: widget.element);
       case ElementKind.rectangle:
-        element = RectangleWidget(element: widget.element);
+        element = RectangleWidget(element: widget.element, pressDelete: (){
+          var tapLocation = Offset.zero;
+          widget.onElementPressed?.call(context, tapLocation);
+        },);
       case ElementKind.image:
         element = ImageWidget(element: widget.element);
     }

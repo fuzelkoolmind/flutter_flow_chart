@@ -7,11 +7,13 @@ class RectangleWidget extends StatelessWidget {
   ///
   const RectangleWidget({
     required this.element,
+    required this.pressDelete,
     super.key,
   });
 
   ///
   final FlowElement element;
+  final Function() pressDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +38,15 @@ class RectangleWidget extends StatelessWidget {
           Positioned(
             right: -8.0,
             top: -8.0,
-            child: Icon(
-              Icons.remove_circle,
-              color: Colors.black,
-              size: 18.0,
+            child: GestureDetector(
+              onTap: (){
+                pressDelete();
+              },
+              child: Icon(
+                Icons.remove_circle,
+                color: Colors.black,
+                size: 20.0,
+              ),
             ),
           ),
           ElementTextWidget(element: element),
