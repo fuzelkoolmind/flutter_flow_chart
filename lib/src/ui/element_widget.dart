@@ -221,8 +221,8 @@ class _ElementWidgetState extends State<ElementWidget> {
       child: const Align(
         alignment: Alignment.bottomRight,
         child: HandlerWidget(
-          width: 25,
-          height: 25,
+          width: 20,
+          height: 20,
           icon: Icon(Icons.compare_arrows),
         ),
       ),
