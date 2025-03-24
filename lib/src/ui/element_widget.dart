@@ -19,6 +19,7 @@ class ElementWidget extends StatefulWidget {
     required this.element,
     super.key,
     this.onElementPressed,
+    this.onElementDeletePressed,
     this.onElementSecondaryTapped,
     this.onElementLongPressed,
     this.onElementSecondaryLongTapped,
@@ -36,6 +37,9 @@ class ElementWidget extends StatefulWidget {
 
   ///
   final void Function(BuildContext context, Offset position)? onElementPressed;
+
+
+  final void Function(BuildContext context, Offset position)? onElementDeletePressed;
 
   ///
   final void Function(BuildContext context, Offset position)?
@@ -124,7 +128,7 @@ class _ElementWidgetState extends State<ElementWidget> {
       case ElementKind.rectangle:
         element = RectangleWidget(element: widget.element, pressDelete: (){
           var tapLocation = Offset.zero;
-          widget.onElementPressed?.call(context, tapLocation);
+          widget.onElementDeletePressed?.call(context, tapLocation);
         },);
       case ElementKind.image:
         element = ImageWidget(element: widget.element);
@@ -162,7 +166,7 @@ class _ElementWidgetState extends State<ElementWidget> {
       onSecondaryTapDown: (details) =>
           secondaryTapDownPos = details.globalPosition,
       onTap: () {
-       // widget.onElementPressed?.call(context, tapLocation);
+        widget.onElementPressed?.call(context, tapLocation);
       },
       onSecondaryTap: () {
         widget.onElementSecondaryTapped?.call(context, secondaryTapDownPos);

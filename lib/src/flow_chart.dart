@@ -17,6 +17,7 @@ class FlowChart extends StatefulWidget {
     required this.dashboard,
     super.key,
     this.onElementPressed,
+    this.onElementDeletePressed,
     this.onElementSecondaryTapped,
     this.onElementLongPressed,
     this.onElementSecondaryLongTapped,
@@ -55,6 +56,13 @@ class FlowChart extends StatefulWidget {
     Offset position,
     FlowElement element,
   )? onElementPressed;
+
+  /// callback for element delete pressed
+  final void Function(
+    BuildContext context,
+    Offset position,
+    FlowElement element,
+  )? onElementDeletePressed;
 
   /// callback for mouse right click event on an element
   final void Function(
