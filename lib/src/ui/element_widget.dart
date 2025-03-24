@@ -162,7 +162,7 @@ class _ElementWidgetState extends State<ElementWidget> {
       onSecondaryTapDown: (details) =>
           secondaryTapDownPos = details.globalPosition,
       onTap: () {
-        widget.onElementPressed?.call(context, tapLocation);
+       // widget.onElementPressed?.call(context, tapLocation);
       },
       onSecondaryTap: () {
         widget.onElementSecondaryTapped?.call(context, secondaryTapDownPos);
