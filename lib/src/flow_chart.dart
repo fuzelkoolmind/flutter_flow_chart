@@ -279,6 +279,13 @@ class _FlowChartState extends State<FlowChart> {
                         position,
                         widget.dashboard.elements.elementAt(i),
                       ),
+              onElementDeletePressed: widget.onElementDeletePressed == null
+                  ? null
+                  : (context, position) => widget.onElementDeletePressed!(
+                        context,
+                        position,
+                        widget.dashboard.elements.elementAt(i),
+                      ),
               onElementSecondaryTapped: widget.onElementSecondaryTapped == null
                   ? null
                   : (context, position) => widget.onElementSecondaryTapped!(
