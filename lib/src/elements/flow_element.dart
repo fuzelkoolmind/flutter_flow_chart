@@ -67,6 +67,7 @@ class FlowElement extends ChangeNotifier {
     Offset position = Offset.zero,
     this.size = Size.zero,
     this.text = '',
+    this.stepId = '',
     this.textColor = Colors.black,
     this.boxBorderColor = Colors.black,
     this.fontFamily,
@@ -105,6 +106,7 @@ class FlowElement extends ChangeNotifier {
     final e = FlowElement(
       size: Size(map['size.width'] as double, map['size.height'] as double),
       text: map['text'] as String,
+      stepId: map['stepId'] as String,
       textColor: Color(map['textColor'] as int),
       boxBorderColor: Color(map['boxBorderColor'] as int),
       fontFamily: map['fontFamily'] as String?,
@@ -157,6 +159,9 @@ class FlowElement extends ChangeNotifier {
 
   /// Element text
   String text;
+
+  /// StepId
+  String stepId;
 
   /// Text color
   Color textColor;
@@ -335,6 +340,7 @@ class FlowElement extends ChangeNotifier {
     return position.hashCode ^
         size.hashCode ^
         text.hashCode ^
+    stepId.hashCode ^
         textColor.hashCode ^
     boxBorderColor.hashCode ^
         fontFamily.hashCode ^
@@ -362,6 +368,7 @@ class FlowElement extends ChangeNotifier {
       'size.width': size.width,
       'size.height': size.height,
       'text': text,
+      'stepId': stepId,
       'textColor': textColor.value,
       'boxBorderColor': boxBorderColor.value,
       'fontFamily': fontFamily,
