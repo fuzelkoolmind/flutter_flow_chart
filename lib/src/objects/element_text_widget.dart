@@ -80,10 +80,12 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              date,
-              textAlign: TextAlign.center,
-              style: textStyle.copyWith(fontSize: 11.0),
+            Expanded(
+              child: Text(
+                date,
+                textAlign: TextAlign.center,
+                style: textStyle.copyWith(fontSize: 10.0),
+              ),
             )
           ],
         )

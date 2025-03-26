@@ -595,14 +595,21 @@ class Dashboard extends ChangeNotifier {
   }
 
   /// recenter the dashboard
-  void recenter() {
+  void recenter({bool? loadFromApiJson}) {
     final center = Offset(dashboardSize.width / 2, dashboardSize.height / 2);
     gridBackgroundParams.offset = center;
     if (elements.isNotEmpty) {
       final currentDeviation = elements.first.position - center;
       for (final element in elements) {
         element.position -= currentDeviation;
-        setElementResizable(element, true);
+
+        if(loadFromApiJson != null && loadFromApiJson == true){
+          setElementResizable(element, false);
+          setElementDeleteable(element, false);
+          setElementDraggable(element, false);
+        }else{
+          setElementResizable(element, true);
+        }
         for (final next in element.next) {
           for (final pivot in next.pivots) {
             pivot.pivot -= currentDeviation;
@@ -628,7 +635,7 @@ class Dashboard extends ChangeNotifier {
   }
 
   /// clear the dashboard and load the new one from [source] json
-  void loadDashboardData(Map<String, dynamic> source) {
+  void loadDashboardData(Map<String, dynamic> source, {bool? loadFromApiJson}) {
     elements.clear();
 
     gridBackgroundParams = GridBackgroundParams.fromMap(
