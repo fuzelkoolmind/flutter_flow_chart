@@ -217,7 +217,7 @@ class FlowElement extends ChangeNotifier {
   bool isEditingText;
 
   /// Kind-specific data
-  final dynamic data;
+  dynamic data;
 
   /// Kind-specific data to load/save
   String? serializedData;
@@ -269,6 +269,13 @@ class FlowElement extends ChangeNotifier {
   /// Set text color
   void setCoxBorderColor(Color color) {
     boxBorderColor = color;
+    notifyListeners();
+  }
+
+  /// Set Data
+  void setData(String? data) {
+    this.data = data;
+    serializedData = data;
     notifyListeners();
   }
 
@@ -355,6 +362,7 @@ class FlowElement extends ChangeNotifier {
         borderThickness.hashCode ^
         elevation.hashCode ^
         next.hashCode ^
+        data.hashCode ^
         isResizable.hashCode ^
         isConnectable.hashCode ^
         isDeletable.hashCode;

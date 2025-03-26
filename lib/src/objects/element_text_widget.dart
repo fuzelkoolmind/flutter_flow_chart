@@ -46,7 +46,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
         print('JSON Parse Data: ${widget.element.data}');
         String moreData = widget.element.data as String;
         data1 = jsonDecode(moreData);
-        date = data1['created_at'] as String;
+        date = data1['date'] as String;
         print('JSON Parse Error: $date');
       }
     }catch(e, stack){
