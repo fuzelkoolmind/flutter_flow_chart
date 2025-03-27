@@ -663,6 +663,6 @@ class Dashboard extends ChangeNotifier {
     }
 
 
-    recenter();
+    recenter(loadFromApiJson: loadFromApiJson);
   }
 }

@@ -123,6 +123,7 @@ class FlowElement extends ChangeNotifier {
       borderColor: Color(map['borderColor'] as int),
       borderThickness: map['borderThickness'] as double,
       elevation: map['elevation'] as double,
+      data: map['data'] as String,
       next: (map['next'] as List).isNotEmpty
           ? List<ConnectionParams>.from(
               (map['next'] as List<dynamic>).map<dynamic>(
