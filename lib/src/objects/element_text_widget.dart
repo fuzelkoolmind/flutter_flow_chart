@@ -84,7 +84,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
               child: Text(
                 date,
                 textAlign: TextAlign.center,
-                style: textStyle.copyWith(fontSize: 10.0),
+                style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
               ),
             )
           ],
