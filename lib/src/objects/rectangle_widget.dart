@@ -35,6 +35,8 @@ class RectangleWidget extends StatelessWidget {
               ),
             ),
           ),
+
+          element.isAssigned != null && element.isAssigned == true ?
           Positioned(
             right: -8.0,
             top: -8.0,
@@ -48,7 +50,7 @@ class RectangleWidget extends StatelessWidget {
                 size: 20.0,
               ),
             ),
-          ),
+          ) : Container(),
           ElementTextWidget(element: element),
         ],
       ),
