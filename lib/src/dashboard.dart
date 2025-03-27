@@ -607,6 +607,7 @@ class Dashboard extends ChangeNotifier {
           setElementResizable(element, false);
           setElementDeleteable(element, false);
           setElementDraggable(element, false);
+          element.isAssigned = true;
         }else{
           setElementResizable(element, true);
         }

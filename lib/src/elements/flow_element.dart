@@ -86,6 +86,7 @@ class FlowElement extends ChangeNotifier {
     this.borderThickness = 3,
     this.elevation = 4,
     this.data,
+    this.isAssigned,
     this.isDraggable = true,
     this.isResizable = false,
     this.isConnectable = true,
@@ -223,6 +224,9 @@ class FlowElement extends ChangeNotifier {
   /// Kind-specific data to load/save
   String? serializedData;
 
+  /// Check the load from server data
+  bool? isAssigned;
+
   @override
   String toString() {
     return 'FlowElement{kind: $kind, text: $text}';
@@ -349,6 +353,7 @@ class FlowElement extends ChangeNotifier {
         size.hashCode ^
         text.hashCode ^
     stepId.hashCode ^
+    isAssigned.hashCode ^
         textColor.hashCode ^
     boxBorderColor.hashCode ^
         fontFamily.hashCode ^
@@ -378,6 +383,7 @@ class FlowElement extends ChangeNotifier {
       'size.height': size.height,
       'text': text,
       'stepId': stepId,
+      'isAssigned': isAssigned,
       'textColor': textColor.value,
       'boxBorderColor': boxBorderColor.value,
       'fontFamily': fontFamily,
