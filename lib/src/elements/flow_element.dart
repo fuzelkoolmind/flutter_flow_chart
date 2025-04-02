@@ -265,6 +265,11 @@ class FlowElement extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set StepId
+  void setStepId(String stepId) {
+    this.stepId = stepId;
+  }
+
   /// Set text color
   void setTextColor(Color color) {
     textColor = color;
