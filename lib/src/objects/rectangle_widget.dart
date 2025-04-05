@@ -38,6 +38,7 @@ class RectangleWidget extends StatelessWidget {
 
           element.isAssigned != null && element.isAssigned == true ?
               element.stepStatus != null ?
+              element.stepStatus!.isEmpty ? Container() :
               Positioned(
                 right: -8.0,
                 top: -8.0,
