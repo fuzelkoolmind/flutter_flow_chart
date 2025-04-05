@@ -17,6 +17,8 @@ class RectangleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    print('Step Status: ${element.stepStatus}');
     return SizedBox(
       width: element.size.width,
       height: element.size.height,
