@@ -37,8 +37,23 @@ class RectangleWidget extends StatelessWidget {
           ),
 
           element.isAssigned != null && element.isAssigned == true ?
-               Container() :
-          Positioned(
+              element.stepStatus != null ?
+              Positioned(
+                right: -8.0,
+                top: -8.0,
+                child: GestureDetector(
+                  onTap: (){
+                    //pressDelete();
+                  },
+                  child: Icon(
+                    element.stepStatus!.toLowerCase() == 'completed' ? Icons.check_circle : Icons.watch_later_rounded,
+                    color: element.stepStatus!.toLowerCase() == 'completed' ? Colors.black : element.borderColor,
+                    size: 20.0,
+                  ),
+                ),
+              )
+                  : Container()
+          : Positioned(
             right: -8.0,
             top: -8.0,
             child: GestureDetector(

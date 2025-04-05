@@ -68,6 +68,7 @@ class FlowElement extends ChangeNotifier {
     this.size = Size.zero,
     this.text = '',
     this.stepId = '',
+    this.stepStatus = '',
     this.textColor = Colors.black,
     this.boxBorderColor = Colors.black,
     this.fontFamily,
@@ -108,6 +109,7 @@ class FlowElement extends ChangeNotifier {
       size: Size(map['size.width'] as double, map['size.height'] as double),
       text: map['text'] as String,
       stepId: map['stepId'] as String,
+      stepStatus: map['stepStatus'] ?? '',
       textColor: Color(map['textColor'] as int),
       boxBorderColor: Color(map['boxBorderColor'] as int),
       fontFamily: map['fontFamily'] as String?,
@@ -164,6 +166,9 @@ class FlowElement extends ChangeNotifier {
 
   /// StepId
   String stepId;
+
+  /// stepStatus
+  String? stepStatus;
 
   /// Text color
   Color textColor;
@@ -358,6 +363,7 @@ class FlowElement extends ChangeNotifier {
         size.hashCode ^
         text.hashCode ^
     stepId.hashCode ^
+    stepStatus.hashCode ^
     isAssigned.hashCode ^
         textColor.hashCode ^
     boxBorderColor.hashCode ^
@@ -388,6 +394,7 @@ class FlowElement extends ChangeNotifier {
       'size.height': size.height,
       'text': text,
       'stepId': stepId,
+      'stepStatus': stepStatus ?? '',
       'isAssigned': isAssigned,
       'textColor': textColor.value,
       'boxBorderColor': boxBorderColor.value,
