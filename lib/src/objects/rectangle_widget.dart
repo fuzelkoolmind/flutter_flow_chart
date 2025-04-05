@@ -17,8 +17,6 @@ class RectangleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    print('Step Status: ${element.stepStatus}');
     return SizedBox(
       width: element.size.width,
       height: element.size.height,
@@ -30,7 +28,7 @@ class RectangleWidget extends StatelessWidget {
             height: element.size.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: element.backgroundColor,
+              color: element.isAssigned != null && element.isAssigned == true && element.isMyStep == true ? Colors.black.withOpacity(0.2) : element.backgroundColor,
               border: Border.all(
                 color: element.borderColor,
                 width: element.borderThickness,
