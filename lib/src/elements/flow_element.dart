@@ -299,6 +299,12 @@ class FlowElement extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set Data
+  void setStepStatus(String? status) {
+    this.stepStatus = status;
+    notifyListeners();
+  }
+
   /// Set text font family
   void setFontFamily(String? fontFamily) {
     this.fontFamily = fontFamily;
