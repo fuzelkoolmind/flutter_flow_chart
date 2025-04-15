@@ -28,12 +28,7 @@ class RectangleWidget extends StatelessWidget {
             height: element.size.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              /*color:
-              element.isAssigned != null && element.isAssigned == true && element.isMyStep == true
-                  ? Colors.black.withOpacity(0.2) : element.backgroundColor,*/
-              color:
-              element.isMyStep != null && element.isMyStep == true
-                  ? Colors.black.withOpacity(0.2) : element.backgroundColor,
+              color: element.isAssigned != null && element.isAssigned == true && element.isMyStep == true ? Colors.black.withOpacity(0.2) : element.backgroundColor,
               border: Border.all(
                 color: element.borderColor,
                 width: element.borderThickness,
@@ -41,7 +36,7 @@ class RectangleWidget extends StatelessWidget {
             ),
           ),
 
-          element.isMyStep != null && element.isMyStep == true ?
+          element.isAssigned != null && element.isAssigned == true ?
               element.stepStatus != null ?
               element.stepStatus!.isEmpty ? Container() :
               Positioned(
