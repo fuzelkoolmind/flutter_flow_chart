@@ -69,16 +69,14 @@ class Dashboard extends ChangeNotifier {
       );
     }
     d
-      ..blockDefaultZoomGestures =
-          (map['blockDefaultZoomGestures'] as bool? ?? false)
+      ..blockDefaultZoomGestures = (map['blockDefaultZoomGestures'] as bool? ?? false)
       ..minimumZoomFactor = map['minimumZoomFactor'] as double? ?? 0.25;
 
     return d;
   }
 
   ///
-  factory Dashboard.fromJson(String source) =>
-      Dashboard.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Dashboard.fromJson(String source) => Dashboard.fromMap(json.decode(source) as Map<String, dynamic>);
 
   /// The current elements in the dashboard
   List<FlowElement> elements;
@@ -165,10 +163,10 @@ class Dashboard extends ChangeNotifier {
 
   /// set [deletable] element property
   void setElementDeleteable(
-      FlowElement element,
-      bool deletable, {
-        bool notify = true,
-      }) {
+    FlowElement element,
+    bool deletable, {
+    bool notify = true,
+  }) {
     element.isDeletable = deletable;
     if (notify) notifyListeners();
   }
@@ -240,8 +238,7 @@ class Dashboard extends ChangeNotifier {
     // find arrow that ends to this [src] inside [handler]
     for (final element in elements) {
       for (final conn in element.next) {
-        if (conn.arrowParams.endArrowPosition == handler.toAlignment() &&
-            conn.destElementId == src.id) {
+        if (conn.arrowParams.endArrowPosition == handler.toAlignment() && conn.destElementId == src.id) {
           conn.arrowParams.tension = tension;
           conn.arrowParams.style = style;
         }
@@ -276,8 +273,7 @@ class Dashboard extends ChangeNotifier {
     FlowElement destElement,
   ) {
     try {
-      return srcElement.next
-          .firstWhere((element) => element.destElementId == destElement.id);
+      return srcElement.next.firstWhere((element) => element.destElementId == destElement.id);
     } catch (e) {
       return null;
     }
@@ -330,8 +326,7 @@ class Dashboard extends ChangeNotifier {
 
     if (isSrc) {
       element.next.removeWhere(
-        (handlerParam) =>
-            handlerParam.arrowParams.startArrowPosition == alignment,
+        (handlerParam) => handlerParam.arrowParams.startArrowPosition == alignment,
       );
     } else {
       final src = findSrcElementByDestElement(element);
@@ -374,16 +369,13 @@ class Dashboard extends ChangeNotifier {
       try {
         // assuming element is the src
         conn = element.next.firstWhere(
-          (handlerParam) =>
-              handlerParam.arrowParams.startArrowPosition == alignment,
+          (handlerParam) => handlerParam.arrowParams.startArrowPosition == alignment,
         );
         if (conn.arrowParams.style != ArrowStyle.segmented) return;
 
         final dest = findElementById(conn.destElementId);
-        newPoint = (dest!
-                    .getHandlerPosition(conn.arrowParams.endArrowPosition) +
-                element
-                    .getHandlerPosition(conn.arrowParams.startArrowPosition)) /
+        newPoint = (dest!.getHandlerPosition(conn.arrowParams.endArrowPosition) +
+                element.getHandlerPosition(conn.arrowParams.startArrowPosition)) /
             2;
       } catch (e) {
         // apparently is not
@@ -393,10 +385,9 @@ class Dashboard extends ChangeNotifier {
         );
         if (conn.arrowParams.style != ArrowStyle.segmented) return;
 
-        newPoint = (element
-                    .getHandlerPosition(conn.arrowParams.endArrowPosition) +
-                src.getHandlerPosition(conn.arrowParams.startArrowPosition)) /
-            2;
+        newPoint =
+            (element.getHandlerPosition(conn.arrowParams.endArrowPosition) + src.getHandlerPosition(conn.arrowParams.startArrowPosition)) /
+                2;
       }
     } else {
       newPoint = point;
@@ -495,10 +486,7 @@ class Dashboard extends ChangeNotifier {
     for (final element in elements) {
       // applying new zoom
       element
-        ..position = (element.position - focalPoint) /
-                gridBackgroundParams.scale *
-                factor +
-            focalPoint
+        ..position = (element.position - focalPoint) / gridBackgroundParams.scale * factor + focalPoint
         ..setScale(gridBackgroundParams.scale, factor);
       for (final conn in element.next) {
         for (final pivot in conn.pivots) {
@@ -545,8 +533,7 @@ class Dashboard extends ChangeNotifier {
     for (var i = 0; i < elements.length; i++) {
       if (elements[i].id == destId) {
         // if the [id] already exist, remove it and add this new connection
-        sourceElement.next
-            .removeWhere((element) => element.destElementId == destId);
+        sourceElement.next.removeWhere((element) => element.destElementId == destId);
         final conn = ConnectionParams(
           destElementId: elements[i].id,
           arrowParams: arrowParams,
@@ -603,12 +590,13 @@ class Dashboard extends ChangeNotifier {
       for (final element in elements) {
         element.position -= currentDeviation;
 
-        if(loadFromApiJson != null && loadFromApiJson == true){
+        if (loadFromApiJson != null && loadFromApiJson == true) {
           setElementResizable(element, false);
           setElementDeleteable(element, false);
           setElementDraggable(element, false);
+          setElementConnectable(element, false);
           element.isAssigned = true;
-        }else{
+        } else {
           setElementResizable(element, true);
         }
         for (final next in element.next) {
@@ -649,20 +637,19 @@ class Dashboard extends ChangeNotifier {
       source['dashboardSizeHeight'] as double,
     );
 
-    try{
+    try {
       final loadedElements = List<FlowElement>.from(
         (source['elements'] as List<dynamic>).map<FlowElement>(
-              (x) => FlowElement.fromMap(x as Map<String, dynamic>),
+          (x) => FlowElement.fromMap(x as Map<String, dynamic>),
         ),
       );
       elements
         ..clear()
         ..addAll(loadedElements);
-    }catch(e, stack){
+    } catch (e, stack) {
       print('loadDashboardData Error: ${e.toString()}');
       print(stack.toString());
     }
-
 
     recenter(loadFromApiJson: loadFromApiJson);
   }
