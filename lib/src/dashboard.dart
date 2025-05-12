@@ -598,6 +598,8 @@ class Dashboard extends ChangeNotifier {
           element.isAssigned = true;
         } else {
           setElementResizable(element, true);
+          setElementDraggable(element, true);
+          setElementConnectable(element, true);
         }
         for (final next in element.next) {
           for (final pivot in next.pivots) {
