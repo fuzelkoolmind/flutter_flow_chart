@@ -28,46 +28,59 @@ class RectangleWidget extends StatelessWidget {
             height: element.size.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: element.isAssigned != null && element.isAssigned == true && element.isMyStep == true ? Colors.black.withOpacity(0.2) : element.backgroundColor,
+              color: element.isAssigned != null && element.isAssigned == true && element.isMyStep == true
+                  ? Colors.black.withOpacity(0.2)
+                  : element.backgroundColor,
               border: Border.all(
                 color: element.borderColor,
                 width: element.borderThickness,
               ),
             ),
           ),
-
-          element.isAssigned != null && element.isAssigned == true ?
-              element.stepStatus != null ?
-              element.stepStatus!.isEmpty ? Container() :
-              Positioned(
-                right: -8.0,
-                top: -8.0,
-                child: GestureDetector(
-                  onTap: (){
-                    //pressDelete();
-                  },
-                  child: Icon(
-                    element.stepStatus!.toLowerCase() == 'completed' ? Icons.check_circle : Icons.watch_later_rounded,
-                    color: element.stepStatus!.toLowerCase() == 'completed' ? Colors.black : element.borderColor,
-                    size: 20.0,
+          element.isAssigned != null && element.isAssigned == true
+              ? element.stepStatus != null
+                  ? element.stepStatus!.isEmpty
+                      ? Container()
+                      : Positioned(
+                          right: -8.0,
+                          top: -8.0,
+                          child: GestureDetector(
+                            onTap: () {
+                              //pressDelete();
+                            },
+                            child: element.stepStatus!.toLowerCase() == 'in progress'
+                                ? Container(
+                                    width: 20.0,
+                                    height: 20.0,
+                                    decoration: BoxDecoration(shape: BoxShape.circle, color: element.borderColor),
+                                    child: Center(
+                                        child: Image.asset(
+                                      'assets/in_progress.png',
+                                      width: 12.0,
+                                      height: 15.0,
+                                    )))
+                                : Icon(
+                                    element.stepStatus!.toLowerCase() == 'completed' ? Icons.check_circle : Icons.watch_later_rounded,
+                                    color: element.stepStatus!.toLowerCase() == 'completed' ? Colors.black : element.borderColor,
+                                    size: 20.0,
+                                  ),
+                          ),
+                        )
+                  : Container()
+              : Positioned(
+                  right: -8.0,
+                  top: -8.0,
+                  child: GestureDetector(
+                    onTap: () {
+                      pressDelete();
+                    },
+                    child: Icon(
+                      Icons.remove_circle,
+                      color: Colors.black,
+                      size: 20.0,
+                    ),
                   ),
                 ),
-              )
-                  : Container()
-          : Positioned(
-            right: -8.0,
-            top: -8.0,
-            child: GestureDetector(
-              onTap: (){
-                pressDelete();
-              },
-              child: Icon(
-                Icons.remove_circle,
-                color: Colors.black,
-                size: 20.0,
-              ),
-            ),
-          ),
           ElementTextWidget(element: element),
         ],
       ),
