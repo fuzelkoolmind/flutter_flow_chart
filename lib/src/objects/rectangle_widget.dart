@@ -54,10 +54,10 @@ class RectangleWidget extends StatelessWidget {
                                     height: 20.0,
                                     decoration: BoxDecoration(shape: BoxShape.circle, color: element.borderColor),
                                     child: Center(
-                                        child: Image.asset(
-                                      'assets/in_progress.png',
-                                      width: 12.0,
-                                      height: 15.0,
+                                        child: Icon(
+                                      Icons.hourglass_top,
+                                      size: 15.0,
+                                      color: Colors.black,
                                     )))
                                 : Icon(
                                     element.stepStatus!.toLowerCase() == 'completed' ? Icons.check_circle : Icons.watch_later_rounded,
