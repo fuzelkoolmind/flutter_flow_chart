@@ -153,8 +153,7 @@ class FlowElement extends ChangeNotifier {
   }
 
   ///
-  factory FlowElement.fromJson(String source) =>
-      FlowElement.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory FlowElement.fromJson(String source) => FlowElement.fromMap(json.decode(source) as Map<String, dynamic>);
 
   /// Unique id set when adding a [FlowElement] with [Dashboard.addElement()]
   String id;
@@ -292,6 +291,12 @@ class FlowElement extends ChangeNotifier {
   }
 
   /// Set text color
+  void setBoxBackgroundColor(Color color) {
+    backgroundColor = color;
+    notifyListeners();
+  }
+
+  /// Set text color
   void setCoxBorderColor(Color color) {
     boxBorderColor = color;
     notifyListeners();
@@ -378,13 +383,13 @@ class FlowElement extends ChangeNotifier {
     return position.hashCode ^
         size.hashCode ^
         text.hashCode ^
-    stepId.hashCode ^
-    stepStatus.hashCode ^
-    isMyStep.hashCode ^
-    isMyAssignedStep.hashCode ^
-    isAssigned.hashCode ^
+        stepId.hashCode ^
+        stepStatus.hashCode ^
+        isMyStep.hashCode ^
+        isMyAssignedStep.hashCode ^
+        isAssigned.hashCode ^
         textColor.hashCode ^
-    boxBorderColor.hashCode ^
+        boxBorderColor.hashCode ^
         fontFamily.hashCode ^
         textSize.hashCode ^
         textIsBold.hashCode ^
