@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
@@ -51,8 +52,7 @@ class ArrowParams extends ChangeNotifier {
   }
 
   ///
-  factory ArrowParams.fromJson(String source) =>
-      ArrowParams.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ArrowParams.fromJson(String source) => ArrowParams.fromMap(json.decode(source) as Map<String, dynamic>);
 
   /// Arrow thickness.
   double thickness;
@@ -185,6 +185,7 @@ class DrawArrow extends StatefulWidget {
     required this.srcElement,
     required this.destElement,
     required List<Pivot> pivots,
+    required this.connectionLinePressed,
     super.key,
     ArrowParams? arrowParams,
   })  : arrowParams = arrowParams ?? ArrowParams(),
@@ -201,6 +202,9 @@ class DrawArrow extends StatefulWidget {
 
   ///
   final PivotsNotifier pivots;
+
+  ///
+  final Function(FlowElement, FlowElement) connectionLinePressed;
 
   @override
   State<DrawArrow> createState() => _DrawArrowState();
@@ -236,22 +240,18 @@ class _DrawArrowState extends State<DrawArrow> {
     from = Offset(
       widget.srcElement.position.dx +
           widget.srcElement.handlerSize / 2.0 +
-          (widget.srcElement.size.width *
-              ((widget.arrowParams.startArrowPosition.x + 1) / 2)),
+          (widget.srcElement.size.width * ((widget.arrowParams.startArrowPosition.x + 1) / 2)),
       widget.srcElement.position.dy +
           widget.srcElement.handlerSize / 2.0 +
-          (widget.srcElement.size.height *
-              ((widget.arrowParams.startArrowPosition.y + 1) / 2)),
+          (widget.srcElement.size.height * ((widget.arrowParams.startArrowPosition.y + 1) / 2)),
     );
     to = Offset(
       widget.destElement.position.dx +
           widget.destElement.handlerSize / 2.0 +
-          (widget.destElement.size.width *
-              ((widget.arrowParams.endArrowPosition.x + 1) / 2)),
+          (widget.destElement.size.width * ((widget.arrowParams.endArrowPosition.x + 1) / 2)),
       widget.destElement.position.dy +
           widget.destElement.handlerSize / 2.0 +
-          (widget.destElement.size.height *
-              ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
+          (widget.destElement.size.height * ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
     );
 
     direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
@@ -259,15 +259,16 @@ class _DrawArrowState extends State<DrawArrow> {
     return RepaintBoundary(
       child: Builder(
         builder: (context) {
-          return CustomPaint(
-            painter: ArrowPainter(
-              params: widget.arrowParams,
-              from: from,
-              to: to,
-              pivots: widget.pivots.value,
-              direction: direction
+          return GestureDetector(
+            onTap: () {
+              widget.connectionLinePressed(widget.srcElement, widget.destElement);
+            },
+            child: CustomPaint(
+              painter: ArrowPainter(params: widget.arrowParams, from: from, to: to, pivots: widget.pivots.value, direction: direction),
+              child: Container(
+                width: 15.0,
+              ),
             ),
-            child: Container(),
           );
         },
       ),
@@ -339,18 +340,17 @@ class ArrowPainter extends CustomPainter {
 
     // Draw the arrowhead pointing downward
 
-    if(direction == 'Left'){
+    if (direction == 'Left') {
       drawRightArrowHead(canvas, paint);
-    }else if(direction == 'Right'){
+    } else if (direction == 'Right') {
       drawLeftArrowHead(canvas, paint);
-    }else if(direction == 'Bottom'){
+    } else if (direction == 'Bottom') {
       drawTopArrowHead(canvas, paint);
-    }else if(direction == 'Top'){
+    } else if (direction == 'Top') {
       drawBottomArrowHead(canvas, paint);
-    }else {
+    } else {
       drawCircleAtEnd(canvas, paint);
     }
-
 
     paint.style = PaintingStyle.stroke;
     canvas.drawPath(path, paint);
@@ -532,9 +532,7 @@ class ArrowPainter extends CustomPainter {
     } else if (params.endArrowPosition.y < 0) {
       dy = -distance;
     }
-    final p3 = params.endArrowPosition == Alignment.center
-        ? Offset(to.dx, to.dy)
-        : Offset(to.dx + dx, to.dy + dy);
+    final p3 = params.endArrowPosition == Alignment.center ? Offset(to.dx, to.dy) : Offset(to.dx + dx, to.dy + dy);
     final p2 = Offset(
       p1.dx + (p3.dx - p1.dx) / 2,
       p1.dy + (p3.dy - p1.dy) / 2,
