@@ -305,17 +305,37 @@ class _DrawArrowState extends State<DrawArrow> {
     final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
 
     return RepaintBoundary(
-      child: CustomPaint(
-        painter: ArrowPainter(
-          params: currentArrowParams,
-          from: from,
-          to: to,
-          pivots: widget.pivots.value,
-          direction: direction,
-          onLinePressed: _onLineClicked, // Pass the callback to the painter
+      child: GestureDetector(
+        onTapDown: (TapDownDetails details) {
+          // Get the local position of the tap
+          final RenderBox renderBox = context.findRenderObject() as RenderBox;
+          final localPosition = renderBox.globalToLocal(details.globalPosition);
+
+          // Check if the tap is on the line
+          final painter = ArrowPainter(
+            params: currentArrowParams,
+            from: from,
+            to: to,
+            pivots: widget.pivots.value,
+            direction: direction,
+          );
+
+          if (painter.isPointOnLine(localPosition)) {
+            _onLineClicked(localPosition);
+          }
+        },
+        child: CustomPaint(
+          painter: ArrowPainter(
+            params: currentArrowParams,
+            from: from,
+            to: to,
+            pivots: widget.pivots.value,
+            direction: direction,
+            // Remove onLinePressed from painter - we handle it in GestureDetector
+          ),
+          size: Size.infinite,
+          child: Container(),
         ),
-        size: Size.infinite,
-        child: Container(),
       ),
     );
   }
@@ -346,7 +366,6 @@ class ArrowPainter extends CustomPainter {
     required this.to,
     required this.direction,
     List<Pivot>? pivots,
-    this.onLinePressed,
   }) : pivots = pivots ?? [];
 
   ///
@@ -366,9 +385,6 @@ class ArrowPainter extends CustomPainter {
 
   ///
   final List<Pivot> pivots;
-
-  ///
-  final Function(Offset)? onLinePressed;
 
   var direction;
 
@@ -404,12 +420,6 @@ class ArrowPainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
-  /// Override hitTest to only respond to clicks on the actual line
-  @override
-  bool hitTest(Offset position) {
-    return isPointOnLine(position);
-  }
-
   /// Check if a point is on the line (used for explicit click detection)
   bool isPointOnLine(Offset position) {
     // Get the line path points
@@ -438,10 +448,6 @@ class ArrowPainter extends CustomPainter {
       final distance = _distanceToLineSegment(position, start, end);
 
       if (distance <= params.clickableWidth / 2) {
-        // If we have a callback, call it
-        if (onLinePressed != null) {
-          onLinePressed!(position);
-        }
         return true;
       }
     }
