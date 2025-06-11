@@ -305,19 +305,34 @@ class _DrawArrowState extends State<DrawArrow> {
     final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
 
     return RepaintBoundary(
-      child: CustomPaint(
-        painter: ArrowPainter(
-          params: currentArrowParams,
-          from: from,
-          to: to,
-          pivots: widget.pivots.value,
-          direction: direction,
-          onLinePressed: (position) {
-            _onLineClicked(position);
-          },
+      child: GestureDetector(
+        onTapDown: (details) {
+          // Only handle click if it's actually on the line
+          final painter = ArrowPainter(
+            params: currentArrowParams,
+            from: from,
+            to: to,
+            pivots: widget.pivots.value,
+            direction: direction,
+            onLinePressed: null, // Don't pass callback here to avoid double firing
+          );
+
+          if (painter.isPointOnLine(details.localPosition)) {
+            _onLineClicked(details.localPosition);
+          }
+        },
+        child: CustomPaint(
+          painter: ArrowPainter(
+            params: currentArrowParams,
+            from: from,
+            to: to,
+            pivots: widget.pivots.value,
+            direction: direction,
+            onLinePressed: null, // Remove callback from painter
+          ),
+          size: Size.infinite,
+          child: Container(),
         ),
-        size: Size.infinite,
-        child: Container(),
       ),
     );
   }
@@ -404,6 +419,55 @@ class ArrowPainter extends CustomPainter {
 
     paint.style = PaintingStyle.stroke;
     canvas.drawPath(path, paint);
+  }
+
+  /// Check if a point is on the line (used for explicit click detection)
+  bool isPointOnLine(Offset position) {
+    // Get the line path points
+    final points = <Offset>[];
+    if (params.style == ArrowStyle.curve) {
+      // For curves, sample points along the path
+      points.addAll(_sampleCurvePath());
+    } else if (params.style == ArrowStyle.segmented) {
+      // For segmented lines, use pivot points
+      points.add(from);
+      for (final pivot in pivots) {
+        points.add(pivot.pivot);
+      }
+      points.add(to);
+    } else {
+      // For rectangular lines, use the corner points
+      points.addAll(_getRectangularPoints());
+    }
+
+    // Create a thick stroke around the line for hit testing
+    for (int i = 0; i < points.length - 1; i++) {
+      final start = points[i];
+      final end = points[i + 1];
+
+      // Calculate perpendicular vector for thickness
+      final direction = end - start;
+      final length = direction.distance;
+      if (length == 0) continue;
+
+      final unitDirection = direction / length;
+      final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
+      final halfWidth = params.clickableWidth / 2;
+
+      // Create a rectangle around the line segment
+      final rect = Path()
+        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
+        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
+        ..close();
+
+      if (rect.contains(position)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /// Draw a bottom-facing arrowhead
@@ -577,58 +641,7 @@ class ArrowPainter extends CustomPainter {
     return true;
   }
 
-  @override
-  bool? hitTest(Offset position) {
-    // Create a wider invisible hit area along the line path
-    final hitTestPath = Path();
-
-    // Get the line path points
-    final points = <Offset>[];
-    if (params.style == ArrowStyle.curve) {
-      // For curves, sample points along the path
-      points.addAll(_sampleCurvePath());
-    } else if (params.style == ArrowStyle.segmented) {
-      // For segmented lines, use pivot points
-      points.add(from);
-      for (final pivot in pivots) {
-        points.add(pivot.pivot);
-      }
-      points.add(to);
-    } else {
-      // For rectangular lines, use the corner points
-      points.addAll(_getRectangularPoints());
-    }
-
-    // Create a thick stroke around the line for hit testing
-    for (int i = 0; i < points.length - 1; i++) {
-      final start = points[i];
-      final end = points[i + 1];
-
-      // Calculate perpendicular vector for thickness
-      final direction = end - start;
-      final length = direction.distance;
-      if (length == 0) continue;
-
-      final unitDirection = direction / length;
-      final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
-      final halfWidth = params.clickableWidth / 2;
-
-      // Create a rectangle around the line segment
-      final rect = Path()
-        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
-        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
-        ..close();
-
-      if (rect.contains(position)) {
-        onLinePressed?.call(position);
-        return true;
-      }
-    }
-
-    return false;
-  }
+  // Removed hitTest method completely to prevent unwanted clicks
 
   List<Offset> _sampleCurvePath() {
     final points = <Offset>[];
