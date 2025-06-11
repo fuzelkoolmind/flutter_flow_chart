@@ -305,34 +305,17 @@ class _DrawArrowState extends State<DrawArrow> {
     final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
 
     return RepaintBoundary(
-      child: GestureDetector(
-        onTapDown: (details) {
-          // Only handle click if it's actually on the line
-          final painter = ArrowPainter(
-            params: currentArrowParams,
-            from: from,
-            to: to,
-            pivots: widget.pivots.value,
-            direction: direction,
-            onLinePressed: null, // Don't pass callback here to avoid double firing
-          );
-
-          if (painter.isPointOnLine(details.localPosition)) {
-            _onLineClicked(details.localPosition);
-          }
-        },
-        child: CustomPaint(
-          painter: ArrowPainter(
-            params: currentArrowParams,
-            from: from,
-            to: to,
-            pivots: widget.pivots.value,
-            direction: direction,
-            onLinePressed: null, // Remove callback from painter
-          ),
-          size: Size.infinite,
-          child: Container(),
+      child: CustomPaint(
+        painter: ArrowPainter(
+          params: currentArrowParams,
+          from: from,
+          to: to,
+          pivots: widget.pivots.value,
+          direction: direction,
+          onLinePressed: _onLineClicked, // Pass the callback to the painter
         ),
+        size: Size.infinite,
+        child: Container(),
       ),
     );
   }
@@ -421,6 +404,12 @@ class ArrowPainter extends CustomPainter {
     canvas.drawPath(path, paint);
   }
 
+  /// Override hitTest to only respond to clicks on the actual line
+  @override
+  bool hitTest(Offset position) {
+    return isPointOnLine(position);
+  }
+
   /// Check if a point is on the line (used for explicit click detection)
   bool isPointOnLine(Offset position) {
     // Get the line path points
@@ -445,29 +434,44 @@ class ArrowPainter extends CustomPainter {
       final start = points[i];
       final end = points[i + 1];
 
-      // Calculate perpendicular vector for thickness
-      final direction = end - start;
-      final length = direction.distance;
-      if (length == 0) continue;
+      // Calculate the distance from point to line segment
+      final distance = _distanceToLineSegment(position, start, end);
 
-      final unitDirection = direction / length;
-      final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
-      final halfWidth = params.clickableWidth / 2;
-
-      // Create a rectangle around the line segment
-      final rect = Path()
-        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
-        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
-        ..close();
-
-      if (rect.contains(position)) {
+      if (distance <= params.clickableWidth / 2) {
+        // If we have a callback, call it
+        if (onLinePressed != null) {
+          onLinePressed!(position);
+        }
         return true;
       }
     }
 
     return false;
+  }
+
+  /// Calculate the minimum distance from a point to a line segment
+  double _distanceToLineSegment(Offset point, Offset lineStart, Offset lineEnd) {
+    final dx = lineEnd.dx - lineStart.dx;
+    final dy = lineEnd.dy - lineStart.dy;
+
+    if (dx == 0 && dy == 0) {
+      // Line segment is actually a point
+      return (point - lineStart).distance;
+    }
+
+    final t = ((point.dx - lineStart.dx) * dx + (point.dy - lineStart.dy) * dy) / (dx * dx + dy * dy);
+
+    if (t < 0) {
+      // Closest point is lineStart
+      return (point - lineStart).distance;
+    } else if (t > 1) {
+      // Closest point is lineEnd
+      return (point - lineEnd).distance;
+    } else {
+      // Closest point is on the line segment
+      final closestPoint = Offset(lineStart.dx + t * dx, lineStart.dy + t * dy);
+      return (point - closestPoint).distance;
+    }
   }
 
   /// Draw a bottom-facing arrowhead
@@ -641,8 +645,6 @@ class ArrowPainter extends CustomPainter {
     return true;
   }
 
-  // Removed hitTest method completely to prevent unwanted clicks
-
   List<Offset> _sampleCurvePath() {
     final points = <Offset>[];
     const sampleCount = 20;
@@ -695,12 +697,27 @@ class ArrowPainter extends CustomPainter {
       p1.dy + (p3.dy - p1.dy) / 2,
     );
 
-    // Quadratic Bézier curve calculation
+    // Quadratic Bézier curve calculation - Fixed to use 4 control points
     final mt = 1 - t;
-    final x = mt * mt * p0.dx + 2 * mt * t * p1.dx + t * t * p2.dx;
-    final y = mt * mt * p0.dy + 2 * mt * t * p1.dy + t * t * p2.dy;
+    final mt2 = mt * mt;
+    final t2 = t * t;
 
-    return Offset(x, y);
+    // For the conic curves, we need to handle them as two separate quadratic curves
+    if (t <= 0.5) {
+      // First conic curve from p0 to p2
+      final localT = t * 2;
+      final localMt = 1 - localT;
+      final x = localMt * localMt * p0.dx + 2 * localMt * localT * p1.dx + localT * localT * p2.dx;
+      final y = localMt * localMt * p0.dy + 2 * localMt * localT * p1.dy + localT * localT * p2.dy;
+      return Offset(x, y);
+    } else {
+      // Second conic curve from p2 to p4
+      final localT = (t - 0.5) * 2;
+      final localMt = 1 - localT;
+      final x = localMt * localMt * p2.dx + 2 * localMt * localT * p3.dx + localT * localT * p4.dx;
+      final y = localMt * localMt * p2.dy + 2 * localMt * localT * p3.dy + localT * localT * p4.dy;
+      return Offset(x, y);
+    }
   }
 
   List<Offset> _getRectangularPoints() {
