@@ -213,7 +213,7 @@ class DrawArrow extends StatefulWidget {
   final PivotsNotifier pivots;
 
   ///
-  final Function(FlowElement, FlowElement) connectionLinePressed;
+  final Function(FlowElement, FlowElement, Offset) connectionLinePressed;
 
   @override
   State<DrawArrow> createState() => _DrawArrowState();
@@ -273,9 +273,9 @@ class _DrawArrowState extends State<DrawArrow> {
           to: to,
           pivots: widget.pivots.value,
           direction: direction,
-          onLinePressed: () {
+          onLinePressed: (position) {
             print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
-            widget.connectionLinePressed(widget.srcElement, widget.destElement);
+            widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
           },
         ),
         size: Size.infinite,
@@ -332,7 +332,7 @@ class ArrowPainter extends CustomPainter {
   final List<Pivot> pivots;
 
   ///
-  final VoidCallback? onLinePressed;
+  final Function(Offset)? onLinePressed;
 
   var direction;
 
@@ -584,7 +584,7 @@ class ArrowPainter extends CustomPainter {
         ..close();
 
       if (rect.contains(position)) {
-        onLinePressed?.call();
+        onLinePressed?.call(position);
         return true;
       }
     }

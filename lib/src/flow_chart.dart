@@ -59,6 +59,7 @@ class FlowChart extends StatefulWidget {
   final void Function(
     FlowElement sourceElement,
     FlowElement destinationElement,
+    Offset position,
   )? onConnectionLinePressed;
 
   /// callback for element delete pressed
@@ -347,8 +348,8 @@ class _FlowChartState extends State<FlowChart> {
                 )],
                 arrowParams: widget.dashboard.elements[i].next[n].arrowParams,
                 pivots: widget.dashboard.elements[i].next[n].pivots,
-                connectionLinePressed: (srcElement, destElement) {
-                  widget.onConnectionLinePressed!(srcElement, destElement);
+                connectionLinePressed: (srcElement, destElement, position) {
+                  widget.onConnectionLinePressed!(srcElement, destElement, position);
                 },
               ),
           // drawing segment handlers
