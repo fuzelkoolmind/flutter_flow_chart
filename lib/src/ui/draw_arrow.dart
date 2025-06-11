@@ -29,6 +29,7 @@ class ArrowParams extends ChangeNotifier {
     this.tension = 1.0,
     this.startArrowPosition = Alignment.centerRight,
     this.endArrowPosition = Alignment.centerLeft,
+    this.clickableWidth = 20.0, // Added clickable width parameter
   }) : _tailLength = tailLength;
 
   ///
@@ -48,6 +49,7 @@ class ArrowParams extends ChangeNotifier {
         map['endArrowPositionX'] as double,
         map['endArrowPositionY'] as double,
       ),
+      clickableWidth: map['clickableWidth'] as double? ?? 20.0,
     );
   }
 
@@ -79,6 +81,9 @@ class ArrowParams extends ChangeNotifier {
   /// 0 means no curve on segments.
   double tension;
 
+  /// The clickable width of the line (invisible hit area)
+  double clickableWidth;
+
   ///
   ArrowParams copyWith({
     double? thickness,
@@ -87,6 +92,7 @@ class ArrowParams extends ChangeNotifier {
     double? tension,
     Alignment? startArrowPosition,
     Alignment? endArrowPosition,
+    double? clickableWidth,
   }) {
     return ArrowParams(
       thickness: thickness ?? this.thickness,
@@ -95,6 +101,7 @@ class ArrowParams extends ChangeNotifier {
       tension: tension ?? this.tension,
       startArrowPosition: startArrowPosition ?? this.startArrowPosition,
       endArrowPosition: endArrowPosition ?? this.endArrowPosition,
+      clickableWidth: clickableWidth ?? this.clickableWidth,
     );
   }
 
@@ -111,6 +118,7 @@ class ArrowParams extends ChangeNotifier {
       'startArrowPositionY': startArrowPosition.y,
       'endArrowPositionX': endArrowPosition.x,
       'endArrowPositionY': endArrowPosition.y,
+      'clickableWidth': clickableWidth,
     };
   }
 
@@ -122,6 +130,7 @@ class ArrowParams extends ChangeNotifier {
     thickness = thickness / currentZoom * factor;
     headRadius = headRadius / currentZoom * factor;
     _tailLength = _tailLength / currentZoom * factor;
+    clickableWidth = clickableWidth / currentZoom * factor;
     notifyListeners();
   }
 
@@ -257,20 +266,20 @@ class _DrawArrowState extends State<DrawArrow> {
     direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
 
     return RepaintBoundary(
-      child: Builder(
-        builder: (context) {
-          return GestureDetector(
-            onTap: () {
-              widget.connectionLinePressed(widget.srcElement, widget.destElement);
-            },
-            child: CustomPaint(
-              painter: ArrowPainter(params: widget.arrowParams, from: from, to: to, pivots: widget.pivots.value, direction: direction),
-              child: Container(
-                width: 15.0,
-              ),
-            ),
-          );
-        },
+      child: CustomPaint(
+        painter: ArrowPainter(
+          params: widget.arrowParams,
+          from: from,
+          to: to,
+          pivots: widget.pivots.value,
+          direction: direction,
+          onLinePressed: () {
+            print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
+            widget.connectionLinePressed(widget.srcElement, widget.destElement);
+          },
+        ),
+        size: Size.infinite,
+        child: Container(),
       ),
     );
   }
@@ -301,6 +310,7 @@ class ArrowPainter extends CustomPainter {
     required this.to,
     required this.direction,
     List<Pivot>? pivots,
+    this.onLinePressed,
   }) : pivots = pivots ?? [];
 
   ///
@@ -321,6 +331,9 @@ class ArrowPainter extends CustomPainter {
   ///
   final List<Pivot> pivots;
 
+  ///
+  final VoidCallback? onLinePressed;
+
   var direction;
 
   @override
@@ -338,8 +351,7 @@ class ArrowPainter extends CustomPainter {
       drawRectangularLine(canvas, paint);
     }
 
-    // Draw the arrowhead pointing downward
-
+    // Draw the arrowhead pointing in the correct direction
     if (direction == 'Left') {
       drawRightArrowHead(canvas, paint);
     } else if (direction == 'Right') {
@@ -358,89 +370,71 @@ class ArrowPainter extends CustomPainter {
 
   /// Draw a bottom-facing arrowhead
   void drawBottomArrowHead(Canvas canvas, Paint paint) {
-    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
-
-    // Calculate the arrowhead points
-    final arrowTip = to; // The tip of the arrow
+    final arrowHeadSize = params.headRadius * 1.5;
+    final arrowTip = to;
     final arrowLeft = Offset(to.dx - arrowHeadSize, to.dy - arrowHeadSize);
     final arrowRight = Offset(to.dx + arrowHeadSize, to.dy - arrowHeadSize);
 
-    // Draw the arrowhead as a triangle
     final arrowHeadPath = Path()
       ..moveTo(arrowTip.dx, arrowTip.dy)
       ..lineTo(arrowLeft.dx, arrowLeft.dy)
       ..lineTo(arrowRight.dx, arrowRight.dy)
       ..close();
 
-    // Fill the arrowhead
     paint.style = PaintingStyle.fill;
     canvas.drawPath(arrowHeadPath, paint);
   }
 
   void drawTopArrowHead(Canvas canvas, Paint paint) {
-    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
-
-    // Calculate the arrowhead points
-    final arrowTip = to; // The tip of the arrow (now pointing upwards)
+    final arrowHeadSize = params.headRadius * 1.5;
+    final arrowTip = to;
     final arrowLeft = Offset(to.dx - arrowHeadSize, to.dy + arrowHeadSize);
     final arrowRight = Offset(to.dx + arrowHeadSize, to.dy + arrowHeadSize);
 
-    // Draw the arrowhead as a triangle
     final arrowHeadPath = Path()
       ..moveTo(arrowTip.dx, arrowTip.dy)
       ..lineTo(arrowLeft.dx, arrowLeft.dy)
       ..lineTo(arrowRight.dx, arrowRight.dy)
       ..close();
 
-    // Fill the arrowhead
     paint.style = PaintingStyle.fill;
     canvas.drawPath(arrowHeadPath, paint);
   }
 
   void drawLeftArrowHead(Canvas canvas, Paint paint) {
-    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
-
-    // Calculate the arrowhead points
-    final arrowTip = to; // The tip of the arrow (now pointing left)
+    final arrowHeadSize = params.headRadius * 1.5;
+    final arrowTip = to;
     final arrowTop = Offset(to.dx + arrowHeadSize, to.dy - arrowHeadSize);
     final arrowBottom = Offset(to.dx + arrowHeadSize, to.dy + arrowHeadSize);
 
-    // Draw the arrowhead as a triangle
     final arrowHeadPath = Path()
       ..moveTo(arrowTip.dx, arrowTip.dy)
       ..lineTo(arrowTop.dx, arrowTop.dy)
       ..lineTo(arrowBottom.dx, arrowBottom.dy)
       ..close();
 
-    // Fill the arrowhead
     paint.style = PaintingStyle.fill;
     canvas.drawPath(arrowHeadPath, paint);
   }
 
   void drawRightArrowHead(Canvas canvas, Paint paint) {
-    final arrowHeadSize = params.headRadius * 1.5; // Size of the arrowhead
-
-    // Calculate the arrowhead points
-    final arrowTip = to; // The tip of the arrow (now pointing right)
+    final arrowHeadSize = params.headRadius * 1.5;
+    final arrowTip = to;
     final arrowTop = Offset(to.dx - arrowHeadSize, to.dy - arrowHeadSize);
     final arrowBottom = Offset(to.dx - arrowHeadSize, to.dy + arrowHeadSize);
 
-    // Draw the arrowhead as a triangle
     final arrowHeadPath = Path()
       ..moveTo(arrowTip.dx, arrowTip.dy)
       ..lineTo(arrowTop.dx, arrowTop.dy)
       ..lineTo(arrowBottom.dx, arrowBottom.dy)
       ..close();
 
-    // Fill the arrowhead
     paint.style = PaintingStyle.fill;
     canvas.drawPath(arrowHeadPath, paint);
   }
 
   void drawCircleAtEnd(Canvas canvas, Paint paint) {
-    final double circleRadius = params.headRadius * 1.5; // Adjust the size
-
-    // Draw the circle at the 'to' position
+    final double circleRadius = params.headRadius * 1.5;
     canvas.drawCircle(to, circleRadius, paint);
   }
 
@@ -472,7 +466,6 @@ class ArrowPainter extends CustomPainter {
 
   /// Draw a rectangular line
   void drawRectangularLine(Canvas canvas, Paint paint) {
-    // calculating offsetted pivot
     var pivot1 = Offset(from.dx, from.dy);
     if (params.startArrowPosition.y == 1) {
       pivot1 = Offset(from.dx, from.dy + params.tailLength);
@@ -498,7 +491,6 @@ class ArrowPainter extends CustomPainter {
   /// of the element.
   void drawCurve(Canvas canvas, Paint paint) {
     var distance = 0.0;
-
     var dx = 0.0;
     var dy = 0.0;
 
@@ -506,7 +498,6 @@ class ArrowPainter extends CustomPainter {
     final p4 = Offset(to.dx, to.dy);
     distance = (p4 - p0).distance / 3;
 
-    // checks for the arrow direction
     if (params.startArrowPosition.x > 0) {
       dx = distance;
     } else if (params.startArrowPosition.x < 0) {
@@ -521,7 +512,6 @@ class ArrowPainter extends CustomPainter {
     dx = 0;
     dy = 0;
 
-    // checks for the arrow direction
     if (params.endArrowPosition.x > 0) {
       dx = distance;
     } else if (params.endArrowPosition.x < 0) {
@@ -550,7 +540,133 @@ class ArrowPainter extends CustomPainter {
   }
 
   @override
-  bool? hitTest(Offset position) => false;
+  bool? hitTest(Offset position) {
+    // Create a wider invisible hit area along the line path
+    final hitTestPath = Path();
+
+    // Get the line path points
+    final points = <Offset>[];
+    if (params.style == ArrowStyle.curve) {
+      // For curves, sample points along the path
+      points.addAll(_sampleCurvePath());
+    } else if (params.style == ArrowStyle.segmented) {
+      // For segmented lines, use pivot points
+      points.add(from);
+      for (final pivot in pivots) {
+        points.add(pivot.pivot);
+      }
+      points.add(to);
+    } else {
+      // For rectangular lines, use the corner points
+      points.addAll(_getRectangularPoints());
+    }
+
+    // Create a thick stroke around the line for hit testing
+    for (int i = 0; i < points.length - 1; i++) {
+      final start = points[i];
+      final end = points[i + 1];
+
+      // Calculate perpendicular vector for thickness
+      final direction = end - start;
+      final length = direction.distance;
+      if (length == 0) continue;
+
+      final unitDirection = direction / length;
+      final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
+      final halfWidth = params.clickableWidth / 2;
+
+      // Create a rectangle around the line segment
+      final rect = Path()
+        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
+        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
+        ..close();
+
+      if (rect.contains(position)) {
+        onLinePressed?.call();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  List<Offset> _sampleCurvePath() {
+    final points = <Offset>[];
+    const sampleCount = 20;
+
+    for (int i = 0; i <= sampleCount; i++) {
+      final t = i / sampleCount;
+      points.add(_getCurvePoint(t));
+    }
+
+    return points;
+  }
+
+  Offset _getCurvePoint(double t) {
+    // Recreate the curve calculation from drawCurve method
+    var distance = 0.0;
+    var dx = 0.0;
+    var dy = 0.0;
+
+    final p0 = Offset(from.dx, from.dy);
+    final p4 = Offset(to.dx, to.dy);
+    distance = (p4 - p0).distance / 3;
+
+    if (params.startArrowPosition.x > 0) {
+      dx = distance;
+    } else if (params.startArrowPosition.x < 0) {
+      dx = -distance;
+    }
+    if (params.startArrowPosition.y > 0) {
+      dy = distance;
+    } else if (params.startArrowPosition.y < 0) {
+      dy = -distance;
+    }
+    final p1 = Offset(from.dx + dx, from.dy + dy);
+    dx = 0;
+    dy = 0;
+
+    if (params.endArrowPosition.x > 0) {
+      dx = distance;
+    } else if (params.endArrowPosition.x < 0) {
+      dx = -distance;
+    }
+    if (params.endArrowPosition.y > 0) {
+      dy = distance;
+    } else if (params.endArrowPosition.y < 0) {
+      dy = -distance;
+    }
+    final p3 = params.endArrowPosition == Alignment.center ? Offset(to.dx, to.dy) : Offset(to.dx + dx, to.dy + dy);
+    final p2 = Offset(
+      p1.dx + (p3.dx - p1.dx) / 2,
+      p1.dy + (p3.dy - p1.dy) / 2,
+    );
+
+    // Quadratic Bézier curve calculation
+    final mt = 1 - t;
+    final x = mt * mt * p0.dx + 2 * mt * t * p1.dx + t * t * p2.dx;
+    final y = mt * mt * p0.dy + 2 * mt * t * p1.dy + t * t * p2.dy;
+
+    return Offset(x, y);
+  }
+
+  List<Offset> _getRectangularPoints() {
+    final points = <Offset>[];
+
+    var pivot1 = Offset(from.dx, from.dy);
+    if (params.startArrowPosition.y == 1) {
+      pivot1 = Offset(from.dx, from.dy + params.tailLength);
+    } else if (params.startArrowPosition.y == -1) {
+      pivot1 = Offset(from.dx, from.dy - params.tailLength);
+    }
+
+    final pivot2 = Offset(to.dx, pivot1.dy);
+
+    points.addAll([from, pivot1, pivot2, to]);
+    return points;
+  }
 }
 
 /// Notifier for pivot points.
