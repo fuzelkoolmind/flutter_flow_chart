@@ -1,3 +1,4 @@
+import 'dart:async'; // Add this import for Timer
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -197,6 +198,8 @@ class DrawArrow extends StatefulWidget {
     required this.connectionLinePressed,
     super.key,
     ArrowParams? arrowParams,
+    this.clickedColor = Colors.red, // Color when clicked
+    this.clickDuration = const Duration(seconds: 3), // Duration to show clicked color
   })  : arrowParams = arrowParams ?? ArrowParams(),
         pivots = PivotsNotifier(pivots);
 
@@ -215,11 +218,20 @@ class DrawArrow extends StatefulWidget {
   ///
   final Function(FlowElement, FlowElement, Offset) connectionLinePressed;
 
+  ///
+  final Color clickedColor;
+
+  ///
+  final Duration clickDuration;
+
   @override
   State<DrawArrow> createState() => _DrawArrowState();
 }
 
 class _DrawArrowState extends State<DrawArrow> {
+  bool _isClicked = false;
+  Timer? _colorTimer;
+
   @override
   void initState() {
     super.initState();
@@ -230,6 +242,7 @@ class _DrawArrowState extends State<DrawArrow> {
 
   @override
   void dispose() {
+    _colorTimer?.cancel();
     widget.srcElement.removeListener(_elementChanged);
     widget.destElement.removeListener(_elementChanged);
     widget.pivots.removeListener(_elementChanged);
@@ -238,6 +251,29 @@ class _DrawArrowState extends State<DrawArrow> {
 
   void _elementChanged() {
     if (mounted) setState(() {});
+  }
+
+  void _onLineClicked(Offset position) {
+    // Cancel any existing timer
+    _colorTimer?.cancel();
+
+    // Set clicked state and change color
+    setState(() {
+      _isClicked = true;
+    });
+
+    // Call the original callback
+    print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
+    widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
+
+    // Start timer to revert color after specified duration
+    _colorTimer = Timer(widget.clickDuration, () {
+      if (mounted) {
+        setState(() {
+          _isClicked = false;
+        });
+      }
+    });
   }
 
   @override
@@ -265,17 +301,19 @@ class _DrawArrowState extends State<DrawArrow> {
 
     direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
 
+    // Create modified arrow params with clicked color if needed
+    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
+
     return RepaintBoundary(
       child: CustomPaint(
         painter: ArrowPainter(
-          params: widget.arrowParams,
+          params: currentArrowParams,
           from: from,
           to: to,
           pivots: widget.pivots.value,
           direction: direction,
           onLinePressed: (position) {
-            print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
-            widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
+            _onLineClicked(position);
           },
         ),
         size: Size.infinite,
