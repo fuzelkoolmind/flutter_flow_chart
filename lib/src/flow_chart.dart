@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_flow_chart/src/dashboard.dart';
 import 'package:flutter_flow_chart/src/elements/flow_element.dart';
-import 'package:flutter_flow_chart/src/ui/draw_arrow.dart';
 import 'package:flutter_flow_chart/src/ui/element_widget.dart';
 import 'package:flutter_flow_chart/src/ui/grid_background.dart';
+import 'package:flutter_flow_chart/src/ui/new_draw_arrow.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
 
 /// Main flow chart Widget.
@@ -164,6 +164,7 @@ class _FlowChartState extends State<FlowChart> {
         widget.onScaleUpdate!,
       );
     }
+    _connectionDrawingModeNotifier.dispose();
     super.dispose();
   }
 
@@ -172,6 +173,28 @@ class _FlowChartState extends State<FlowChart> {
   }
 
   double _oldScaleUpdateDelta = 0;
+
+  // Option 1: Using a simple boolean
+  bool _isInConnectionDrawingMode = false;
+
+  // Option 2: Using a ValueNotifier for reactive updates
+  final ValueNotifier<bool> _connectionDrawingModeNotifier = ValueNotifier<bool>(false);
+
+  void _startDrawingConnection() {
+    setState(() {
+      _isInConnectionDrawingMode = true;
+    });
+    // Or if using ValueNotifier:
+    _connectionDrawingModeNotifier.value = true;
+  }
+
+  void _stopDrawingConnection() {
+    setState(() {
+      _isInConnectionDrawingMode = false;
+    });
+    // Or if using ValueNotifier:
+    _connectionDrawingModeNotifier.value = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -351,6 +374,10 @@ class _FlowChartState extends State<FlowChart> {
                 connectionLinePressed: (srcElement, destElement, position) {
                   widget.onConnectionLinePressed!(srcElement, destElement, position);
                 },
+
+                isInConnectionDrawingMode: _isInConnectionDrawingMode,
+                // Option 2: Pass the ValueNotifier for reactive updates
+                connectionDrawingModeNotifier: _connectionDrawingModeNotifier,
               ),
           // drawing segment handlers
           for (int i = 0; i < widget.dashboard.elements.length; i++)
