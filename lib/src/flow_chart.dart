@@ -175,28 +175,6 @@ class _FlowChartState extends State<FlowChart> {
 
   double _oldScaleUpdateDelta = 0;
 
-  // Option 1: Using a simple boolean
-  bool _isInConnectionDrawingMode = false;
-
-  // Option 2: Using a ValueNotifier for reactive updates
-  final ValueNotifier<bool> _connectionDrawingModeNotifier = ValueNotifier<bool>(false);
-
-  void _startDrawingConnection() {
-    setState(() {
-      _isInConnectionDrawingMode = true;
-    });
-    // Or if using ValueNotifier:
-    _connectionDrawingModeNotifier.value = true;
-  }
-
-  void _stopDrawingConnection() {
-    setState(() {
-      _isInConnectionDrawingMode = false;
-    });
-    // Or if using ValueNotifier:
-    _connectionDrawingModeNotifier.value = false;
-  }
-
   @override
   Widget build(BuildContext context) {
     /// get dashboard position after first frame is drawn
@@ -375,10 +353,6 @@ class _FlowChartState extends State<FlowChart> {
                 connectionLinePressed: (srcElement, destElement, position) {
                   widget.onConnectionLinePressed!(srcElement, destElement, position);
                 },
-
-                isInConnectionDrawingMode: _isInConnectionDrawingMode,
-                // Option 2: Pass the ValueNotifier for reactive updates
-                connectionDrawingModeNotifier: _connectionDrawingModeNotifier,
               ),
           // drawing segment handlers
           for (int i = 0; i < widget.dashboard.elements.length; i++)
