@@ -3,6 +3,7 @@ import 'package:flutter_flow_chart/src/dashboard.dart';
 import 'package:flutter_flow_chart/src/elements/flow_element.dart';
 import 'package:flutter_flow_chart/src/ui/handler_widget.dart';
 import 'package:flutter_flow_chart/src/ui/new_draw_arrow.dart';
+import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 
 /// Draw handlers over the element
 
@@ -238,6 +239,10 @@ class _ElementHandler extends StatelessWidget {
               ),
             ),
             onDragUpdate: (details) {
+              if (!StreamBuilderUtils.isDragging.value) {
+                print('onDragUpdate Position: ${details.localPosition}');
+                StreamBuilderUtils.isDragging.add(true);
+              }
               if (!isDragging) {
                 DrawingArrow.instance.params = ArrowParams(
                   startArrowPosition: alignment,
@@ -252,6 +257,7 @@ class _ElementHandler extends StatelessWidget {
             },
             onDragEnd: (details) {
               print('DragEnd Details: ${details.toString()} ${handler.name}');
+              StreamBuilderUtils.isDragging.add(false);
               DrawingArrow.instance.reset();
               isDragging = false;
             },

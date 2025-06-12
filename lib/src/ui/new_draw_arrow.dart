@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
+import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 
 /// Arrow style enumeration
 // enum ArrowStyle {
@@ -296,7 +297,13 @@ class _DrawArrowState extends State<DrawArrow> {
   }
 
   void _onLineClicked(Offset position) {
-    if (_isInConnectionDrawingMode) {
+    // if (_isInConnectionDrawingMode) {
+    //   // Ignore clicks while drawing connections
+    //   print('Click ignored - in connection drawing mode');
+    //   return;
+    // }
+
+    if (StreamBuilderUtils.isDragging.value) {
       // Ignore clicks while drawing connections
       print('Click ignored - in connection drawing mode');
       return;
@@ -366,7 +373,13 @@ class _DrawArrowState extends State<DrawArrow> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (TapDownDetails details) {
-        if (_isInConnectionDrawingMode) {
+        // if (_isInConnectionDrawingMode) {
+        //   print('Tap ignored - in connection drawing mode');
+        //   return;
+        // }
+
+        print('StreamBuilderUtils Value: ${StreamBuilderUtils.isDragging.value}');
+        if (StreamBuilderUtils.isDragging.value) {
           print('Tap ignored - in connection drawing mode');
           return;
         }
