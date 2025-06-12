@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
 import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Arrow style enumeration
 // enum ArrowStyle {
@@ -231,8 +230,7 @@ class DrawArrow extends StatefulWidget {
 }
 
 class _DrawArrowState extends State<DrawArrow> {
-  //bool _isClicked = false;
-  BehaviorSubject<bool> _isClicked = BehaviorSubject<bool>.seeded(false);
+  bool _isClicked = false;
   Timer? _colorTimer;
 
   @override
@@ -267,10 +265,9 @@ class _DrawArrowState extends State<DrawArrow> {
     _colorTimer?.cancel();
 
     // Set clicked state and change color
-    // setState(() {
-    //   _isClicked = true;
-    // });
-    _isClicked.add(true);
+    setState(() {
+      _isClicked = true;
+    });
 
     // Call the original callback
     print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
@@ -278,12 +275,11 @@ class _DrawArrowState extends State<DrawArrow> {
 
     // Start timer to revert color after specified duration
     _colorTimer = Timer(widget.clickDuration, () {
-      // if (mounted) {
-      //   setState(() {
-      //     _isClicked = false;
-      //   });
-      // }
-      _isClicked.add(false);
+      if (mounted) {
+        setState(() {
+          _isClicked = false;
+        });
+      }
     });
   }
 
@@ -312,7 +308,7 @@ class _DrawArrowState extends State<DrawArrow> {
 
     direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
 
-    final currentArrowParams = _isClicked.value ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
+    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
 
     final arrowPainter = ArrowPainter(
       params: currentArrowParams,
