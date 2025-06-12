@@ -201,8 +201,6 @@ class DrawArrow extends StatefulWidget {
     ArrowParams? arrowParams,
     this.clickedColor = Colors.red, // Color when clicked
     this.clickDuration = const Duration(seconds: 3), // Duration to show clicked color
-    this.isInConnectionDrawingMode = false, // Add this parameter
-    this.connectionDrawingModeNotifier, // Add this parameter for reactive updates
   })  : arrowParams = arrowParams ?? ArrowParams(),
         pivots = PivotsNotifier(pivots);
 
@@ -227,12 +225,6 @@ class DrawArrow extends StatefulWidget {
   ///
   final Duration clickDuration;
 
-  /// Whether the chart is currently in connection drawing mode
-  final bool isInConnectionDrawingMode;
-
-  /// Optional notifier to listen for connection drawing mode changes
-  final ValueNotifier<bool>? connectionDrawingModeNotifier;
-
   @override
   State<DrawArrow> createState() => _DrawArrowState();
 }
@@ -241,37 +233,12 @@ class _DrawArrowState extends State<DrawArrow> {
   bool _isClicked = false;
   Timer? _colorTimer;
 
-  bool _isInConnectionDrawingMode = false;
-
   @override
   void initState() {
     super.initState();
-    _isInConnectionDrawingMode = widget.isInConnectionDrawingMode;
-
     widget.srcElement.addListener(_elementChanged);
     widget.destElement.addListener(_elementChanged);
     widget.pivots.addListener(_elementChanged);
-
-    // Listen to connection drawing mode changes if notifier is provided
-    widget.connectionDrawingModeNotifier?.addListener(_onConnectionModeChanged);
-  }
-
-  @override
-  void didUpdateWidget(DrawArrow oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Update connection drawing mode when widget updates
-    if (oldWidget.isInConnectionDrawingMode != widget.isInConnectionDrawingMode) {
-      setState(() {
-        _isInConnectionDrawingMode = widget.isInConnectionDrawingMode;
-      });
-    }
-
-    // Handle notifier changes
-    if (oldWidget.connectionDrawingModeNotifier != widget.connectionDrawingModeNotifier) {
-      oldWidget.connectionDrawingModeNotifier?.removeListener(_onConnectionModeChanged);
-      widget.connectionDrawingModeNotifier?.addListener(_onConnectionModeChanged);
-    }
   }
 
   @override
@@ -280,20 +247,11 @@ class _DrawArrowState extends State<DrawArrow> {
     widget.srcElement.removeListener(_elementChanged);
     widget.destElement.removeListener(_elementChanged);
     widget.pivots.removeListener(_elementChanged);
-    widget.connectionDrawingModeNotifier?.removeListener(_onConnectionModeChanged);
     super.dispose();
   }
 
   void _elementChanged() {
     if (mounted) setState(() {});
-  }
-
-  void _onConnectionModeChanged() {
-    if (mounted) {
-      setState(() {
-        _isInConnectionDrawingMode = widget.connectionDrawingModeNotifier?.value ?? false;
-      });
-    }
   }
 
   void _onLineClicked(Offset position) {
@@ -660,6 +618,10 @@ class ArrowPainter extends CustomPainter {
   @override
   bool? hitTest(Offset position) {
     // Create a wider invisible hit area along the line path
+
+    if (StreamBuilderUtils.isDragging.value) {
+      return false;
+    }
     final hitTestPath = Path();
 
     // Get the line path points
