@@ -1,23 +1,16 @@
-// import 'dart:async'; // Add this import for Timer
-// import 'dart:convert';
-//
-// import 'package:flutter/material.dart';
-// import 'package:flutter_flow_chart/flutter_flow_chart.dart';
-// import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
-//
-// /// Arrow style enumeration
-// enum ArrowStyle {
-//   /// A curved arrow which points nicely to each handlers
-//   curve,
-//
-//   /// A segmented line where pivot points can be added and curvature between
-//   /// them can be adjusted with a tension.
-//   segmented,
-//
-//   /// A rectangular shaped line.
-//   rectangular,
-// }
-//
+/// Arrow style enumeration
+enum ArrowStyle {
+  /// A curved arrow which points nicely to each handlers
+  curve,
+
+  /// A segmented line where pivot points can be added and curvature between
+  /// them can be adjusted with a tension.
+  segmented,
+
+  /// A rectangular shaped line.
+  rectangular,
+}
+
 // /// Arrow parameters used by [DrawArrow] widget
 // class ArrowParams extends ChangeNotifier {
 //   ///

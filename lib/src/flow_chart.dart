@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_flow_chart/src/dashboard.dart';
 import 'package:flutter_flow_chart/src/elements/flow_element.dart';
+import 'package:flutter_flow_chart/src/ui/draw_arrow.dart';
 import 'package:flutter_flow_chart/src/ui/element_widget.dart';
 import 'package:flutter_flow_chart/src/ui/grid_background.dart';
 import 'package:flutter_flow_chart/src/ui/new_draw_arrow.dart';
