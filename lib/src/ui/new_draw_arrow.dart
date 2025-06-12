@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
 import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
+import 'package:rxdart/rxdart.dart';
 
 /// Arrow style enumeration
 // enum ArrowStyle {
@@ -230,7 +231,8 @@ class DrawArrow extends StatefulWidget {
 }
 
 class _DrawArrowState extends State<DrawArrow> {
-  bool _isClicked = false;
+  //bool _isClicked = false;
+  BehaviorSubject<bool> _isClicked = BehaviorSubject<bool>.seeded(false);
   Timer? _colorTimer;
 
   @override
@@ -255,12 +257,6 @@ class _DrawArrowState extends State<DrawArrow> {
   }
 
   void _onLineClicked(Offset position) {
-    // if (_isInConnectionDrawingMode) {
-    //   // Ignore clicks while drawing connections
-    //   print('Click ignored - in connection drawing mode');
-    //   return;
-    // }
-
     if (StreamBuilderUtils.isDragging.value) {
       // Ignore clicks while drawing connections
       print('Click ignored - in connection drawing mode');
@@ -271,9 +267,10 @@ class _DrawArrowState extends State<DrawArrow> {
     _colorTimer?.cancel();
 
     // Set clicked state and change color
-    setState(() {
-      _isClicked = true;
-    });
+    // setState(() {
+    //   _isClicked = true;
+    // });
+    _isClicked.add(true);
 
     // Call the original callback
     print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
@@ -281,11 +278,12 @@ class _DrawArrowState extends State<DrawArrow> {
 
     // Start timer to revert color after specified duration
     _colorTimer = Timer(widget.clickDuration, () {
-      if (mounted) {
-        setState(() {
-          _isClicked = false;
-        });
-      }
+      // if (mounted) {
+      //   setState(() {
+      //     _isClicked = false;
+      //   });
+      // }
+      _isClicked.add(false);
     });
   }
 
@@ -314,7 +312,7 @@ class _DrawArrowState extends State<DrawArrow> {
 
     direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
 
-    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
+    final currentArrowParams = _isClicked.value ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
 
     final arrowPainter = ArrowPainter(
       params: currentArrowParams,
@@ -331,11 +329,6 @@ class _DrawArrowState extends State<DrawArrow> {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapDown: (TapDownDetails details) {
-        // if (_isInConnectionDrawingMode) {
-        //   print('Tap ignored - in connection drawing mode');
-        //   return;
-        // }
-
         print('StreamBuilderUtils Value: ${StreamBuilderUtils.isDragging.value}');
         if (StreamBuilderUtils.isDragging.value) {
           print('Tap ignored - in connection drawing mode');
@@ -618,7 +611,6 @@ class ArrowPainter extends CustomPainter {
   @override
   bool? hitTest(Offset position) {
     // Create a wider invisible hit area along the line path
-
     if (StreamBuilderUtils.isDragging.value) {
       return false;
     }

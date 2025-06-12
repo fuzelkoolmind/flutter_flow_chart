@@ -165,7 +165,6 @@ class _FlowChartState extends State<FlowChart> {
         widget.onScaleUpdate!,
       );
     }
-    _connectionDrawingModeNotifier.dispose();
     super.dispose();
   }
 
