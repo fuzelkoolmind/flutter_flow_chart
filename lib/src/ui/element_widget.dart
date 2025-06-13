@@ -7,9 +7,9 @@ import 'package:flutter_flow_chart/src/objects/oval_widget.dart';
 import 'package:flutter_flow_chart/src/objects/parallelogram_widget.dart';
 import 'package:flutter_flow_chart/src/objects/rectangle_widget.dart';
 import 'package:flutter_flow_chart/src/objects/storage_widget.dart';
-
 import 'package:flutter_flow_chart/src/ui/element_handlers.dart';
 import 'package:flutter_flow_chart/src/ui/handler_widget.dart';
+import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 
 /// Widget that use [element] properties to display it on the dashboard scene
 class ElementWidget extends StatefulWidget {
@@ -38,20 +38,16 @@ class ElementWidget extends StatefulWidget {
   ///
   final void Function(BuildContext context, Offset position)? onElementPressed;
 
-
   final void Function(BuildContext context, Offset position)? onElementDeletePressed;
 
   ///
-  final void Function(BuildContext context, Offset position)?
-      onElementSecondaryTapped;
+  final void Function(BuildContext context, Offset position)? onElementSecondaryTapped;
 
   ///
-  final void Function(BuildContext context, Offset position)?
-      onElementLongPressed;
+  final void Function(BuildContext context, Offset position)? onElementLongPressed;
 
   ///
-  final void Function(BuildContext context, Offset position)?
-      onElementSecondaryLongTapped;
+  final void Function(BuildContext context, Offset position)? onElementSecondaryLongTapped;
 
   ///
   final void Function(
@@ -126,10 +122,13 @@ class _ElementWidgetState extends State<ElementWidget> {
       case ElementKind.hexagon:
         element = HexagonWidget(element: widget.element);
       case ElementKind.rectangle:
-        element = RectangleWidget(element: widget.element, pressDelete: (){
-          var tapLocation = Offset.zero;
-          widget.onElementDeletePressed?.call(context, tapLocation);
-        },);
+        element = RectangleWidget(
+          element: widget.element,
+          pressDelete: () {
+            var tapLocation = Offset.zero;
+            widget.onElementDeletePressed?.call(context, tapLocation);
+          },
+        );
       case ElementKind.image:
         element = ImageWidget(element: widget.element);
     }
@@ -164,10 +163,12 @@ class _ElementWidgetState extends State<ElementWidget> {
     var secondaryTapDownPos = Offset.zero;
     element = GestureDetector(
       onTapDown: (details) => tapLocation = details.globalPosition,
-      onSecondaryTapDown: (details) =>
-          secondaryTapDownPos = details.globalPosition,
-      onTap: () {
+      onSecondaryTapDown: (details) => secondaryTapDownPos = details.globalPosition,
+      onTap: () async {
+        StreamBuilderUtils.isClickElement.add(true);
         widget.onElementPressed?.call(context, tapLocation);
+        await Future.delayed(const Duration(seconds: 3));
+        StreamBuilderUtils.isClickElement.add(false);
       },
       onSecondaryTap: () {
         widget.onElementSecondaryTapped?.call(context, secondaryTapDownPos);
@@ -200,8 +201,11 @@ class _ElementWidgetState extends State<ElementWidget> {
                 left: 8.0,
                 bottom: 8.0,
                 child: _buildDeleteHandle(
-                      () {
+                  () async {
+                    StreamBuilderUtils.isClickElement.add(true);
                     widget.onElementPressed?.call(context, tapLocation);
+                    await Future.delayed(const Duration(seconds: 3));
+                    StreamBuilderUtils.isClickElement.add(false);
                   },
                 ),
               ),
@@ -270,8 +274,7 @@ class _ElementWidgetState extends State<ElementWidget> {
           );
         },
         onDragEnd: (details) {
-          widget.element
-              .changePosition(details.offset - widget.dashboard.position);
+          widget.element.changePosition(details.offset - widget.dashboard.position);
         },
       ),
     );

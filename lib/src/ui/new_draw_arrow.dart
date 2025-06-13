@@ -255,7 +255,7 @@ class _DrawArrowState extends State<DrawArrow> {
   }
 
   void _onLineClicked(Offset position) {
-    if (StreamBuilderUtils.isDragging.value) {
+    if (StreamBuilderUtils.isDragging.value || StreamBuilderUtils.isClickElement.value) {
       // Ignore clicks while drawing connections
       print('Click ignored - in connection drawing mode');
       return;
@@ -326,7 +326,7 @@ class _DrawArrowState extends State<DrawArrow> {
       behavior: HitTestBehavior.translucent,
       onTapDown: (TapDownDetails details) {
         print('StreamBuilderUtils Value: ${StreamBuilderUtils.isDragging.value}');
-        if (StreamBuilderUtils.isDragging.value) {
+        if (StreamBuilderUtils.isDragging.value || StreamBuilderUtils.isClickElement.value) {
           print('Tap ignored - in connection drawing mode');
           return;
         }
@@ -607,7 +607,7 @@ class ArrowPainter extends CustomPainter {
   @override
   bool? hitTest(Offset position) {
     // Create a wider invisible hit area along the line path
-    if (StreamBuilderUtils.isDragging.value) {
+    if (StreamBuilderUtils.isDragging.value || StreamBuilderUtils.isClickElement.value) {
       return false;
     }
     final hitTestPath = Path();
