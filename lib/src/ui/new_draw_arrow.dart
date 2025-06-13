@@ -255,7 +255,7 @@ class _DrawArrowState extends State<DrawArrow> {
   }
 
   void _onLineClicked(Offset position) {
-    if (StreamBuilderUtils.isDragging.value || StreamBuilderUtils.isClickElement.value) {
+    if (StreamBuilderUtils.isDragging.value) {
       // Ignore clicks while drawing connections
       print('Click ignored - in connection drawing mode');
       return;
@@ -323,10 +323,10 @@ class _DrawArrowState extends State<DrawArrow> {
     );
 
     return GestureDetector(
-      behavior: HitTestBehavior.translucent,
+      behavior: HitTestBehavior.deferToChild,
       onTapDown: (TapDownDetails details) {
         print('StreamBuilderUtils Value: ${StreamBuilderUtils.isDragging.value}');
-        if (StreamBuilderUtils.isDragging.value || StreamBuilderUtils.isClickElement.value) {
+        if (StreamBuilderUtils.isDragging.value) {
           print('Tap ignored - in connection drawing mode');
           return;
         }
@@ -607,7 +607,7 @@ class ArrowPainter extends CustomPainter {
   @override
   bool? hitTest(Offset position) {
     // Create a wider invisible hit area along the line path
-    if (StreamBuilderUtils.isDragging.value || StreamBuilderUtils.isClickElement.value) {
+    if (StreamBuilderUtils.isDragging.value) {
       return false;
     }
     final hitTestPath = Path();

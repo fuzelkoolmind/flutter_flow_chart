@@ -9,7 +9,6 @@ import 'package:flutter_flow_chart/src/objects/rectangle_widget.dart';
 import 'package:flutter_flow_chart/src/objects/storage_widget.dart';
 import 'package:flutter_flow_chart/src/ui/element_handlers.dart';
 import 'package:flutter_flow_chart/src/ui/handler_widget.dart';
-import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 
 /// Widget that use [element] properties to display it on the dashboard scene
 class ElementWidget extends StatefulWidget {
@@ -164,11 +163,8 @@ class _ElementWidgetState extends State<ElementWidget> {
     element = GestureDetector(
       onTapDown: (details) => tapLocation = details.globalPosition,
       onSecondaryTapDown: (details) => secondaryTapDownPos = details.globalPosition,
-      onTap: () async {
-        StreamBuilderUtils.isClickElement.add(true);
+      onTap: () {
         widget.onElementPressed?.call(context, tapLocation);
-        await Future.delayed(const Duration(seconds: 3));
-        StreamBuilderUtils.isClickElement.add(false);
       },
       onSecondaryTap: () {
         widget.onElementSecondaryTapped?.call(context, secondaryTapDownPos);
@@ -201,11 +197,8 @@ class _ElementWidgetState extends State<ElementWidget> {
                 left: 8.0,
                 bottom: 8.0,
                 child: _buildDeleteHandle(
-                  () async {
-                    StreamBuilderUtils.isClickElement.add(true);
+                  () {
                     widget.onElementPressed?.call(context, tapLocation);
-                    await Future.delayed(const Duration(seconds: 3));
-                    StreamBuilderUtils.isClickElement.add(false);
                   },
                 ),
               ),
