@@ -70,6 +70,7 @@ class FlowElement extends ChangeNotifier {
     this.stepId = '',
     this.stepStatus = '',
     this.isMyStep = false,
+    this.isCustomStep = false,
     this.isMyAssignedStep = false,
     this.textColor = Colors.black,
     this.boxBorderColor = Colors.black,
@@ -113,6 +114,7 @@ class FlowElement extends ChangeNotifier {
       stepId: map['stepId'] as String,
       stepStatus: map['stepStatus'] as String? ?? '',
       isMyStep: map['isMyStep'] as bool? ?? false,
+      isCustomStep: map['isCustomStep'] as bool? ?? false,
       isMyAssignedStep: map['isMyAssignedStep'] as bool? ?? false,
       textColor: Color(map['textColor'] as int),
       boxBorderColor: Color(map['boxBorderColor'] as int),
@@ -175,6 +177,9 @@ class FlowElement extends ChangeNotifier {
 
   /// isMyStep
   bool? isMyStep;
+
+  /// isCustomStep
+  bool? isCustomStep;
 
   /// isMyAssignedStep
   bool? isMyAssignedStep;
@@ -386,6 +391,7 @@ class FlowElement extends ChangeNotifier {
         stepId.hashCode ^
         stepStatus.hashCode ^
         isMyStep.hashCode ^
+        isCustomStep.hashCode ^
         isMyAssignedStep.hashCode ^
         isAssigned.hashCode ^
         textColor.hashCode ^
@@ -419,6 +425,7 @@ class FlowElement extends ChangeNotifier {
       'stepId': stepId,
       'stepStatus': stepStatus ?? '',
       'isMyStep': isMyStep ?? false,
+      'isCustomStep': isCustomStep ?? false,
       'isMyAssignedStep': isMyAssignedStep ?? false,
       'isAssigned': isAssigned,
       'textColor': textColor.value,
