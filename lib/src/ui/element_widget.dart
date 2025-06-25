@@ -187,19 +187,7 @@ class _ElementWidgetState extends State<ElementWidget> {
         height: widget.element.size.height + widget.element.handlerSize,
         child: Stack(
           children: [
-            Draggable(
-              feedback: const SizedBox.shrink(),
-              child: element,
-              onDragUpdate: (details) {
-                if (!StreamBuilderUtils.isDragging.value) {
-                  print('onDragUpdate Element Position: ${details.localPosition}');
-                  StreamBuilderUtils.isDragging.add(true);
-                }
-              },
-              onDragEnd: (details) {
-                StreamBuilderUtils.isDragging.add(false);
-              },
-            ),
+            element,
             if (widget.element.isResizable)
               Positioned(
                 right: 8.0,
@@ -279,9 +267,13 @@ class _ElementWidgetState extends State<ElementWidget> {
           widget.element.changePosition(
             details.globalPosition - widget.dashboard.position - delta,
           );
+          if (!StreamBuilderUtils.isDragging.value) {
+            StreamBuilderUtils.isDragging.add(true);
+          }
         },
         onDragEnd: (details) {
           widget.element.changePosition(details.offset - widget.dashboard.position);
+          StreamBuilderUtils.isDragging.add(false);
         },
       ),
     );
