@@ -10,6 +10,8 @@ import 'package:flutter_flow_chart/src/objects/storage_widget.dart';
 import 'package:flutter_flow_chart/src/ui/element_handlers.dart';
 import 'package:flutter_flow_chart/src/ui/handler_widget.dart';
 
+import '../utils/stream_builder.dart';
+
 /// Widget that use [element] properties to display it on the dashboard scene
 class ElementWidget extends StatefulWidget {
   ///
@@ -185,7 +187,19 @@ class _ElementWidgetState extends State<ElementWidget> {
         height: widget.element.size.height + widget.element.handlerSize,
         child: Stack(
           children: [
-            element,
+            Draggable(
+              feedback: const SizedBox.shrink(),
+              child: element,
+              onDragUpdate: (details) {
+                if (!StreamBuilderUtils.isDragging.value) {
+                  print('onDragUpdate Element Position: ${details.localPosition}');
+                  StreamBuilderUtils.isDragging.add(true);
+                }
+              },
+              onDragEnd: (details) {
+                StreamBuilderUtils.isDragging.add(false);
+              },
+            ),
             if (widget.element.isResizable)
               Positioned(
                 right: 8.0,
