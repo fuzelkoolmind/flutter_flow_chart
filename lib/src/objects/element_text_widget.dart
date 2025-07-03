@@ -34,26 +34,22 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
     final textStyle = TextStyle(
       color: widget.element.textColor,
       fontSize: widget.element.textSize,
-      fontWeight:
-          widget.element.textIsBold ? FontWeight.bold : FontWeight.normal,
+      fontWeight: widget.element.textIsBold ? FontWeight.bold : FontWeight.normal,
       fontFamily: widget.element.fontFamily,
     );
 
     var data1;
     String date = '';
-    try{
-      if(widget.element.data != null){
-        print('JSON Parse Data: ${widget.element.data}');
+    try {
+      if (widget.element.data != null) {
         String moreData = widget.element.data as String;
         data1 = jsonDecode(moreData);
         date = data1['date'] as String;
-        print('JSON Parse Error: $date');
       }
-    }catch(e, stack){
+    } catch (e, stack) {
       print('JSON Parse Error: ${e.toString()}');
       print('JSON Parse Stack: $stack');
     }
-
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -62,33 +58,53 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
         Align(
           child: widget.element.isEditingText
               ? TextFormField(
-            controller: _controller,
-            autofocus: true,
-            onTapOutside: (event) => dismissTextEditor(),
-            onFieldSubmitted: dismissTextEditor,
-            textAlign: TextAlign.center,
-            style: textStyle,
-          )
+                  controller: _controller,
+                  autofocus: true,
+                  onTapOutside: (event) => dismissTextEditor(),
+                  onFieldSubmitted: dismissTextEditor,
+                  textAlign: TextAlign.center,
+                  style: textStyle,
+                )
               : Text(
-            widget.element.text,
-            textAlign: TextAlign.center,
-            style: textStyle.copyWith(fontSize: 11.0),
-          ),
+                  widget.element.text,
+                  textAlign: TextAlign.center,
+                  style: textStyle.copyWith(fontSize: 11.0),
+                ),
         ),
-        SizedBox(height: widget.element.data != null ? 2.0 : 0.0,),
-        if (widget.element.data != null) Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Text(
-                date,
-                textAlign: TextAlign.center,
-                style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
-              ),
-            )
-          ],
-        )
+        SizedBox(
+          height: widget.element.data == null ? 2.0 : 0.0,
+        ),
+        if (widget.element.data == null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  '${widget.element.duration.toString() ?? ''} days duration',
+                  textAlign: TextAlign.center,
+                  style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
+                ),
+              )
+            ],
+          ),
+        SizedBox(
+          height: widget.element.data != null ? 2.0 : 0.0,
+        ),
+        if (widget.element.data != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  '$date (${widget.element.duration.toString() ?? ''})',
+                  textAlign: TextAlign.center,
+                  style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
+                ),
+              )
+            ],
+          )
       ],
     );
   }

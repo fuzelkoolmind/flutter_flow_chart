@@ -68,6 +68,7 @@ class FlowElement extends ChangeNotifier {
     this.size = Size.zero,
     this.text = '',
     this.stepId = '',
+    this.duration = 1,
     this.stepStatus = '',
     this.isMyStep = false,
     this.isCustomStep = false,
@@ -112,6 +113,7 @@ class FlowElement extends ChangeNotifier {
       size: Size(map['size.width'] as double, map['size.height'] as double),
       text: map['text'] as String,
       stepId: map['stepId'] as String,
+      duration: map['duration'] as int,
       stepStatus: map['stepStatus'] as String? ?? '',
       isMyStep: map['isMyStep'] as bool? ?? false,
       isCustomStep: map['isCustomStep'] as bool? ?? false,
@@ -171,6 +173,9 @@ class FlowElement extends ChangeNotifier {
 
   /// StepId
   String stepId;
+
+  /// duration
+  int duration;
 
   /// stepStatus
   String? stepStatus;
@@ -284,6 +289,12 @@ class FlowElement extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Set Duration
+  void setDuration(int duration) {
+    this.duration = duration;
+    notifyListeners();
+  }
+
   /// Set StepId
   void setStepId(String stepId) {
     this.stepId = stepId;
@@ -389,6 +400,7 @@ class FlowElement extends ChangeNotifier {
         size.hashCode ^
         text.hashCode ^
         stepId.hashCode ^
+        duration.hashCode ^
         stepStatus.hashCode ^
         isMyStep.hashCode ^
         isCustomStep.hashCode ^
@@ -423,6 +435,7 @@ class FlowElement extends ChangeNotifier {
       'size.height': size.height,
       'text': text,
       'stepId': stepId,
+      'duration': duration,
       'stepStatus': stepStatus ?? '',
       'isMyStep': isMyStep ?? false,
       'isCustomStep': isCustomStep ?? false,
