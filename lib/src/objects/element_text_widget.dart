@@ -81,7 +81,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
             children: [
               Expanded(
                 child: Text(
-                  '${widget.element.duration.toString() ?? ''} days duration',
+                  '${widget.element.duration.toString() ?? ''} d',
                   textAlign: TextAlign.center,
                   style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
                 ),
@@ -98,7 +98,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
             children: [
               Expanded(
                 child: Text(
-                  '$date (${widget.element.duration.toString() ?? ''})',
+                  '$date (${widget.element.duration.toString() ?? ''} d)',
                   textAlign: TextAlign.center,
                   style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
                 ),
