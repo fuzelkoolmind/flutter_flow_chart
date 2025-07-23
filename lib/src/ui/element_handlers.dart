@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/src/dashboard.dart';
 import 'package:flutter_flow_chart/src/elements/flow_element.dart';
@@ -246,9 +244,11 @@ class _ElementHandler extends StatelessWidget {
                 StreamBuilderUtils.isDragging.add(true);
               }
               if (!isDragging) {
-                int color = _randomArrowParams();
-                DrawingArrow.instance.params =
-                    ArrowParams(startArrowPosition: alignment, endArrowPosition: Alignment.center, color: Color(color));
+                //int color = _randomArrowParams();
+                DrawingArrow.instance.params = ArrowParams(
+                  startArrowPosition: alignment,
+                  endArrowPosition: Alignment.center,
+                );
                 DrawingArrow.instance.from = details.globalPosition - dashboard.position;
                 isDragging = true;
               }
@@ -268,9 +268,9 @@ class _ElementHandler extends StatelessWidget {
     );
   }
 
-  static int _randomArrowParams() {
-    final random = Random();
-    final colorInt = kArrowColors[random.nextInt(kArrowColors.length)];
-    return colorInt;
-  }
+  // static int _randomArrowParams() {
+  //   final random = Random();
+  //   final colorInt = kArrowColors[random.nextInt(kArrowColors.length)];
+  //   return colorInt;
+  // }
 }

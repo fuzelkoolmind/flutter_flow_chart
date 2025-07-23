@@ -1,34 +1,33 @@
 import 'dart:async'; // Add this import for Timer
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
 import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 
-// Add this color list at the top of the file
-const List<int> kArrowColors = [
-  4278190080,
-  4294901760,
-  4278255360,
-  4278190335,
-  4294902015,
-  4294944000,
-  4286578816,
-  4281348142,
-  4286611456,
-  4278190208,
-  4278222976,
-  4283193858,
-  4294956800,
-  4290822336,
-  4286578688,
-  4278222848,
-  4294797754,
-  4283215697,
-  4279911631
-];
+// // Add this color list at the top of the file
+// const List<int> kArrowColors = [
+//   4278190080,
+//   4294901760,
+//   4278255360,
+//   4278190335,
+//   4294902015,
+//   4294944000,
+//   4286578816,
+//   4281348142,
+//   4286611456,
+//   4278190208,
+//   4278222976,
+//   4283193858,
+//   4294956800,
+//   4290822336,
+//   4286578688,
+//   4278222848,
+//   4294797754,
+//   4283215697,
+//   4279911631
+// ];
 
 /// Arrow style enumeration
 // enum ArrowStyle {
@@ -47,7 +46,7 @@ const List<int> kArrowColors = [
 class ArrowParams extends ChangeNotifier {
   ///
   ArrowParams({
-    this.thickness = 2.5,
+    this.thickness = 1.7,
     this.headRadius = 6,
     double tailLength = 25.0,
     this.color = Colors.black,
@@ -223,9 +222,9 @@ class DrawArrow extends StatefulWidget {
     required this.connectionLinePressed,
     super.key,
     ArrowParams? arrowParams,
-    //this.clickedColor = Colors.red, // Color when clicked
+    this.clickedColor = Colors.red, // Color when clicked
     this.clickDuration = const Duration(seconds: 3), // Duration to show clicked color
-  })  : arrowParams = arrowParams ?? _randomArrowParams(),
+  })  : arrowParams = arrowParams ?? ArrowParams(),
         pivots = PivotsNotifier(pivots);
 
   ///
@@ -244,16 +243,16 @@ class DrawArrow extends StatefulWidget {
   final Function(FlowElement, FlowElement, Offset) connectionLinePressed;
 
   ///
-  //final Color clickedColor;
+  final Color clickedColor;
 
   ///
   final Duration clickDuration;
 
-  static ArrowParams _randomArrowParams() {
-    final random = Random();
-    final colorInt = kArrowColors[random.nextInt(kArrowColors.length)];
-    return ArrowParams(color: Color(colorInt));
-  }
+  // static ArrowParams _randomArrowParams() {
+  //   final random = Random();
+  //   final colorInt = kArrowColors[random.nextInt(kArrowColors.length)];
+  //   return ArrowParams(color: Color(colorInt));
+  // }
 
   @override
   State<DrawArrow> createState() => _DrawArrowState();
@@ -338,8 +337,8 @@ class _DrawArrowState extends State<DrawArrow> {
 
     direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
 
-    //final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
-    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(thickness: 3.5) : widget.arrowParams;
+    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
+    //final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(thickness: 3.5) : widget.arrowParams;
 
     final arrowPainter = ArrowPainter(
       params: currentArrowParams,
