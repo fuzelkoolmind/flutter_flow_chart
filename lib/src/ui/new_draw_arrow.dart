@@ -1,6 +1,7 @@
 import 'dart:async'; // Add this import for Timer
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
@@ -41,6 +42,8 @@ import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 //   /// A rectangular shaped line.
 //   rectangular,
 // }
+
+Timer? webTimer;
 
 /// Arrow parameters used by [DrawArrow] widget
 class ArrowParams extends ChangeNotifier {
@@ -273,6 +276,7 @@ class _DrawArrowState extends State<DrawArrow> {
   @override
   void dispose() {
     _colorTimer?.cancel();
+    webTimer?.cancel();
     widget.srcElement.removeListener(_elementChanged);
     widget.destElement.removeListener(_elementChanged);
     widget.pivots.removeListener(_elementChanged);
@@ -283,33 +287,86 @@ class _DrawArrowState extends State<DrawArrow> {
     if (mounted) setState(() {});
   }
 
+  // void _onLineClicked(Offset position) {
+  //   if (StreamBuilderUtils.isDragging.value) {
+  //     // Ignore clicks while drawing connections
+  //     print('Click ignored - in connection drawing mode');
+  //     return;
+  //   }
+  //
+  //   // Cancel any existing timer
+  //   _colorTimer?.cancel();
+  //   webTimer?.cancel();
+  //
+  //   // Set clicked state and change color
+  //
+  //   if(kIsWeb){
+  //     webTimer = Timer(Duration(seconds: 2), () {
+  //       setState(() {
+  //         _isClicked = true;
+  //       });
+  //
+  //       // Call the original callback
+  //       print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
+  //       widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
+  //
+  //       // Start timer to revert color after specified duration
+  //       _colorTimer = Timer(Duration(seconds: 3), () {
+  //         webTimer?.cancel();
+  //         if (mounted) {
+  //           setState(() {
+  //             _isClicked = false;
+  //           });
+  //         }
+  //       });
+  //     });
+  //   }else {
+  //     setState(() {
+  //       _isClicked = true;
+  //     });
+  //
+  //     // Call the original callback
+  //     print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
+  //     widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
+  //
+  //     // Start timer to revert color after specified duration
+  //     _colorTimer = Timer(widget.clickDuration, () {
+  //       if (mounted) {
+  //         setState(() {
+  //           _isClicked = false;
+  //         });
+  //       }
+  //     });
+  //   }
+  // }
+
   void _onLineClicked(Offset position) {
     if (StreamBuilderUtils.isDragging.value) {
-      // Ignore clicks while drawing connections
       print('Click ignored - in connection drawing mode');
       return;
     }
 
-    // Cancel any existing timer
     _colorTimer?.cancel();
+    webTimer?.cancel();
 
-    // Set clicked state and change color
-    setState(() {
-      _isClicked = true;
-    });
+    void triggerClick(Duration revertDuration) {
+      setState(() => _isClicked = true);
 
-    // Call the original callback
-    print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
-    widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
+      print('Click on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
+      widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
 
-    // Start timer to revert color after specified duration
-    _colorTimer = Timer(widget.clickDuration, () {
-      if (mounted) {
-        setState(() {
-          _isClicked = false;
-        });
-      }
-    });
+      _colorTimer = Timer(revertDuration, () {
+        if (mounted) setState(() => _isClicked = false);
+      });
+    }
+
+    if (kIsWeb) {
+      webTimer = Timer(const Duration(seconds: 2), () {
+        triggerClick(const Duration(seconds: 3));
+      });
+    } else {
+      triggerClick(widget.clickDuration);
+    }
   }
 
   @override
@@ -637,8 +694,13 @@ class ArrowPainter extends CustomPainter {
   @override
   bool? hitTest(Offset position) {
     // Create a wider invisible hit area along the line path
+
     if (StreamBuilderUtils.isDragging.value) {
       return false;
+    } else if (kIsWeb) {
+      if (webTimer != null) {
+        webTimer?.cancel();
+      }
     }
     final hitTestPath = Path();
 
