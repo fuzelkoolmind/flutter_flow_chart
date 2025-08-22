@@ -76,7 +76,7 @@ class RectangleWidget extends StatelessWidget {
                     },
                     behavior: HitTestBehavior.translucent, // ensures empty space is clickable
                     child: Container(
-                      padding: const EdgeInsets.all(12), // increase tappable area
+                      padding: const EdgeInsets.all(5), // increase tappable area
                       color: Colors.transparent, // keep background invisible
                       child: Icon(
                         Icons.remove_circle,

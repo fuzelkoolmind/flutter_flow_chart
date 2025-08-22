@@ -7,6 +7,7 @@ import 'package:flutter_flow_chart/src/objects/oval_widget.dart';
 import 'package:flutter_flow_chart/src/objects/parallelogram_widget.dart';
 import 'package:flutter_flow_chart/src/objects/rectangle_widget.dart';
 import 'package:flutter_flow_chart/src/objects/storage_widget.dart';
+import 'package:flutter_flow_chart/src/ui/dragable_widget.dart';
 import 'package:flutter_flow_chart/src/ui/element_handlers.dart';
 import 'package:flutter_flow_chart/src/ui/handler_widget.dart';
 
@@ -153,7 +154,12 @@ class _ElementWidgetState extends State<ElementWidget> {
     }
 
     if (widget.element.isDraggable) {
-      element = _buildDraggableWidget(element);
+      //element = _buildDraggableWidget(element);
+      element = DraggableFlowElement(
+        child: element,
+        element: widget.element,
+        dashboard: widget.dashboard,
+      );
     } else {
       // Since element is not draggable, move the grid when dragging on it
       //element = IgnorePointer(child: element);

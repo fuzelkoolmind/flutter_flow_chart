@@ -749,7 +749,7 @@ class ArrowPainter extends CustomPainter {
       //   return true;
       // }
 
-      if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutLength: 15)){
+      if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutLength: 30)){
         onLinePressed?.call(position);
         return true;
       }
