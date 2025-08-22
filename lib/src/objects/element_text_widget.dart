@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 
 /// Common widget for the element text
@@ -65,7 +66,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
                   textAlign: TextAlign.center,
                   style: textStyle,
                 )
-              : Text(
+              : AutoSizeText(
                   widget.element.text,
                   textAlign: TextAlign.center,
                   style: textStyle.copyWith(fontSize: 11.0),
@@ -80,7 +81,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Text(
+                child: AutoSizeText(
                   '${widget.element.duration.toString() ?? ''} days',
                   textAlign: TextAlign.center,
                   style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
@@ -97,7 +98,7 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Text(
+                child: AutoSizeText(
                   '$date (${widget.element.duration.toString() ?? ''}d)',
                   textAlign: TextAlign.center,
                   style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),

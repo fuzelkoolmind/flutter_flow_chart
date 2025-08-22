@@ -1,5 +1,6 @@
 import 'dart:async'; // Add this import for Timer
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -743,13 +744,56 @@ class ArrowPainter extends CustomPainter {
         ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
         ..close();
 
-      if (rect.contains(position)) {
+      // if (rect.contains(position)) {
+      //   onLinePressed?.call(position);
+      //   return true;
+      // }
+
+      if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutLength: 15)){
         onLinePressed?.call(position);
         return true;
       }
     }
 
     return false;
+  }
+
+
+  bool isPointOnMiddleLine({
+    required Offset start,
+    required Offset end,
+    required double width,
+    required Offset position,
+    double cutLength = 20, // how much to cut off from each end
+  }) {
+    // Direction vector
+    final dx = end.dx - start.dx;
+    final dy = end.dy - start.dy;
+    final length = sqrt(dx * dx + dy * dy);
+    if (length == 0) return false;
+
+    // Normalize direction
+    final ux = dx / length;
+    final uy = dy / length;
+
+    // Shorten the start and end points (cut off circles/overlaps)
+    final newStart = Offset(start.dx + ux * cutLength, start.dy + uy * cutLength);
+    final newEnd   = Offset(end.dx - ux * cutLength, end.dy - uy * cutLength);
+
+    // Perpendicular (for width)
+    final px = -uy;
+    final py = ux;
+    final halfWidth = width / 2;
+
+    // Build path only for shortened middle rectangle
+    final path = Path()
+      ..moveTo(newStart.dx + px * halfWidth, newStart.dy + py * halfWidth)
+      ..lineTo(newStart.dx - px * halfWidth, newStart.dy - py * halfWidth)
+      ..lineTo(newEnd.dx - px * halfWidth, newEnd.dy - py * halfWidth)
+      ..lineTo(newEnd.dx + px * halfWidth, newEnd.dy + py * halfWidth)
+      ..close();
+
+    return path.contains(position);
   }
 
   List<Offset> _sampleCurvePath() {
@@ -810,6 +854,17 @@ class ArrowPainter extends CustomPainter {
     final y = mt * mt * p0.dy + 2 * mt * t * p1.dy + t * t * p2.dy;
 
     return Offset(x, y);
+  }
+
+  bool _isInsideBox(Offset position, FlowElement element, {double margin = 10.0}) {
+    final rect = Rect.fromLTWH(
+      element.position.dx,
+      element.position.dy,
+      element.size.width,
+      element.size.height,
+    ).inflate(margin); // expands rect by margin on all sides
+
+    return rect.contains(position);
   }
 
   List<Offset> _getRectangularPoints() {

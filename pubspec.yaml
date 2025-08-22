@@ -14,6 +14,7 @@ dependencies:
   # https://pub.dev/packages/uuid
   uuid: ^4.4.0
   rxdart: ^0.28.0
+  flutter_auto_size_text: ^4.1.0
 
 
 dev_dependencies:

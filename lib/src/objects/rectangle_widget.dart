@@ -74,10 +74,15 @@ class RectangleWidget extends StatelessWidget {
                     onTap: () {
                       pressDelete();
                     },
-                    child: Icon(
-                      Icons.remove_circle,
-                      color: Colors.black,
-                      size: 20.0,
+                    behavior: HitTestBehavior.translucent, // ensures empty space is clickable
+                    child: Container(
+                      padding: const EdgeInsets.all(12), // increase tappable area
+                      color: Colors.transparent, // keep background invisible
+                      child: Icon(
+                        Icons.remove_circle,
+                        color: Colors.black,
+                        size: 25.0,
+                      ),
                     ),
                   ),
                 ),

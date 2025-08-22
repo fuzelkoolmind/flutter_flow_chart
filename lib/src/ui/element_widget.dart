@@ -225,8 +225,8 @@ class _ElementWidgetState extends State<ElementWidget> {
       child: const Align(
         alignment: Alignment.bottomRight,
         child: HandlerWidget(
-          width: 20,
-          height: 20,
+          width: 25,
+          height: 25,
           icon: Icon(Icons.compare_arrows),
         ),
       ),
@@ -250,12 +250,41 @@ class _ElementWidgetState extends State<ElementWidget> {
     );
   }
 
+  // Widget _buildDraggableWidget(Widget element) {
+  //   return Listener(
+  //     onPointerDown: (event) {
+  //       delta = event.localPosition;
+  //     },
+  //     child: Draggable<FlowElement>(
+  //       data: widget.element,
+  //       childWhenDragging: const SizedBox.shrink(),
+  //       feedback: Material(
+  //         color: Colors.transparent,
+  //         child: element,
+  //       ),
+  //       child: element,
+  //       onDragUpdate: (details) {
+  //         widget.element.changePosition(
+  //           details.globalPosition - widget.dashboard.position - delta,
+  //         );
+  //         if (!StreamBuilderUtils.isDragging.value) {
+  //           StreamBuilderUtils.isDragging.add(true);
+  //         }
+  //       },
+  //       onDragEnd: (details) {
+  //         widget.element.changePosition(details.offset - widget.dashboard.position);
+  //         StreamBuilderUtils.isDragging.add(false);
+  //       },
+  //     ),
+  //   );
+  // }
+
   Widget _buildDraggableWidget(Widget element) {
     return Listener(
       onPointerDown: (event) {
         delta = event.localPosition;
       },
-      child: Draggable<FlowElement>(
+      child: LongPressDraggable<FlowElement>(
         data: widget.element,
         childWhenDragging: const SizedBox.shrink(),
         feedback: Material(
@@ -272,7 +301,9 @@ class _ElementWidgetState extends State<ElementWidget> {
           }
         },
         onDragEnd: (details) {
-          widget.element.changePosition(details.offset - widget.dashboard.position);
+          widget.element.changePosition(
+            details.offset - widget.dashboard.position,
+          );
           StreamBuilderUtils.isDragging.add(false);
         },
       ),
