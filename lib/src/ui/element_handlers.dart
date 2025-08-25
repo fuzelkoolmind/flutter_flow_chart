@@ -199,20 +199,9 @@ class _ElementHandler extends StatelessWidget {
               'alignment': alignment,
             },
             child: GestureDetector(
-              onTapDown: (details) {
-                // Set dragging state immediately on tap down to prevent any interference
-                print('onTapDown - Setting dragging state to true immediately');
-                StreamBuilderUtils.isDragging.add(true);
-                isDragging = true;
-                tapDown = details.globalPosition - dashboard.position;
-              },
+              onTapDown: (details) => tapDown = details.globalPosition - dashboard.position,
               onSecondaryTapDown: (details) => secondaryTapDown = details.globalPosition - dashboard.position,
               onTap: () {
-                // Don't process tap if we're in dragging mode
-                if (StreamBuilderUtils.isDragging.value) {
-                  print('Tap ignored - in dragging mode');
-                  return;
-                }
                 onHandlerPressed?.call(
                   context,
                   tapDown,
@@ -221,11 +210,6 @@ class _ElementHandler extends StatelessWidget {
                 );
               },
               onSecondaryTap: () {
-                // Don't process secondary tap if we're in dragging mode
-                if (StreamBuilderUtils.isDragging.value) {
-                  print('Secondary tap ignored - in dragging mode');
-                  return;
-                }
                 onHandlerSecondaryTapped?.call(
                   context,
                   secondaryTapDown,
@@ -234,11 +218,6 @@ class _ElementHandler extends StatelessWidget {
                 );
               },
               onLongPress: () {
-                // Don't process long press if we're in dragging mode
-                if (StreamBuilderUtils.isDragging.value) {
-                  print('Long press ignored - in dragging mode');
-                  return;
-                }
                 onHandlerLongPressed?.call(
                   context,
                   tapDown,
@@ -247,11 +226,6 @@ class _ElementHandler extends StatelessWidget {
                 );
               },
               onSecondaryLongPress: () {
-                // Don't process secondary long press if we're in dragging mode
-                if (StreamBuilderUtils.isDragging.value) {
-                  print('Secondary long press ignored - in dragging mode');
-                  return;
-                }
                 onHandlerSecondaryLongTapped?.call(
                   context,
                   secondaryTapDown,
@@ -264,19 +238,12 @@ class _ElementHandler extends StatelessWidget {
                 height: handlerSize,
               ),
             ),
-            onDragStarted: () {
-              // Set dragging state immediately when drag starts
-              print('onDragStarted - Setting dragging state to true');
-              StreamBuilderUtils.isDragging.add(true);
-              isDragging = true;
-            },
-            onDragUpdate: (details) {
-              // Ensure dragging state is set
+
+                        onDragUpdate: (details) {
               if (!StreamBuilderUtils.isDragging.value) {
                 print('onDragUpdate Position: ${details.localPosition}');
                 StreamBuilderUtils.isDragging.add(true);
               }
-
               if (!isDragging) {
                 //int color = _randomArrowParams();
                 DrawingArrow.instance.params = ArrowParams(
@@ -286,25 +253,17 @@ class _ElementHandler extends StatelessWidget {
                 DrawingArrow.instance.from = details.globalPosition - dashboard.position;
                 isDragging = true;
               }
-
               DrawingArrow.instance.setTo(
                 details.globalPosition - dashboard.position + dashboard.handlerFeedbackOffset,
               );
             },
             onDragEnd: (details) {
               print('DragEnd Details: ${details.toString()} ${handler.name}');
-              // Reset both dragging states
               StreamBuilderUtils.isDragging.add(false);
               DrawingArrow.instance.reset();
               isDragging = false;
             },
-            onDraggableCanceled: (velocity, offset) {
-              print('DragCanceled - Resetting dragging state');
-              // Reset dragging state if drag is canceled
-              StreamBuilderUtils.isDragging.add(false);
-              DrawingArrow.instance.reset();
-              isDragging = false;
-            },
+
           );
         },
       ),
