@@ -719,42 +719,42 @@ class ArrowPainter extends CustomPainter {
       points.addAll(_getRectangularPoints());
     }
 
-          // Create a thick stroke around the line for hit testing
-      for (int i = 0; i < points.length - 1; i++) {
-        final start = points[i];
-        final end = points[i + 1];
+    // Create a thick stroke around the line for hit testing
+    for (int i = 0; i < points.length - 1; i++) {
+      final start = points[i];
+      final end = points[i + 1];
+      // Calculate perpendicular vector for thickness
+      final direction = end - start;
+      final length = direction.distance;
+      if (length == 0) continue;
 
-        // Calculate perpendicular vector for thickness
-        final direction = end - start;
-        final length = direction.distance;
-        if (length == 0) continue;
+      final unitDirection = direction / length;
+      final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
+      final halfWidth = params.clickableWidth / 2;
 
-        final unitDirection = direction / length;
-        final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
-        final halfWidth = params.clickableWidth / 2;
+      // Create a rectangle around the line segment
+      final rect = Path()
+        ..moveTo(start.dx + perpendicular.dx * halfWidth, (start.dy - 20.0) + perpendicular.dy * halfWidth)
+        ..lineTo(start.dx - perpendicular.dx * halfWidth, (start.dy - 20.0) - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx - perpendicular.dx * halfWidth, (end.dy - 20.0) - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx + perpendicular.dx * halfWidth, (end.dy - 20.0) + perpendicular.dy * halfWidth)
+        ..close();
 
-        // Create a rectangle around the line segment
-        final rect = Path()
-          ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
-          ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
-          ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
-          ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
-          ..close();
-
-        // if (rect.contains(position)) {
-        //   onLinePressed?.call(position);
-        //   return true;
-        // }
-
-        if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutStart: 30, cutEnd: 30)){
-          onLinePressed?.call(position);
-          return true;
-        }
+      if (rect.contains(position)) {
+        print('DrawArrow Line: $start - $end');
+        print('DrawArrow Position: $position');
+        onLinePressed?.call(position);
+        return true;
       }
+
+      // if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutStart: 30, cutEnd: 30)){
+      //   onLinePressed?.call(position);
+      //   return true;
+      // }
+    }
 
     return false;
   }
-
 
   bool isPointOnMiddleLine({
     required Offset start,
@@ -762,9 +762,8 @@ class ArrowPainter extends CustomPainter {
     required double width,
     required Offset position,
     double cutStart = 30, // trim near the start box
-    double cutEnd = 30,   // trim near the end box
+    double cutEnd = 30, // trim near the end box
   }) {
-    
     // Direction vector
     final dx = end.dx - start.dx;
     final dy = end.dy - start.dy;
