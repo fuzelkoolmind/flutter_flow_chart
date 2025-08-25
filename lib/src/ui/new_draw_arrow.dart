@@ -749,7 +749,7 @@ class ArrowPainter extends CustomPainter {
       //   return true;
       // }
 
-      if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutLength: 30)){
+      if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutStart: 30, cutEnd: 30)){
         onLinePressed?.call(position);
         return true;
       }
@@ -764,7 +764,8 @@ class ArrowPainter extends CustomPainter {
     required Offset end,
     required double width,
     required Offset position,
-    double cutLength = 20, // how much to cut off from each end
+    double cutStart = 30, // trim near the start box
+    double cutEnd = 30,   // trim near the end box
   }) {
     // Direction vector
     final dx = end.dx - start.dx;
@@ -776,16 +777,16 @@ class ArrowPainter extends CustomPainter {
     final ux = dx / length;
     final uy = dy / length;
 
-    // Shorten the start and end points (cut off circles/overlaps)
-    final newStart = Offset(start.dx + ux * cutLength, start.dy + uy * cutLength);
-    final newEnd   = Offset(end.dx - ux * cutLength, end.dy - uy * cutLength);
+    // Shorten start and end → avoids overlap with connector circles
+    final newStart = Offset(start.dx + ux * cutStart, start.dy + uy * cutStart);
+    final newEnd = Offset(end.dx - ux * cutEnd, end.dy - uy * cutEnd);
 
-    // Perpendicular (for width)
+    // Perpendicular for line thickness
     final px = -uy;
     final py = ux;
     final halfWidth = width / 2;
 
-    // Build path only for shortened middle rectangle
+    // Path only for the trimmed line
     final path = Path()
       ..moveTo(newStart.dx + px * halfWidth, newStart.dy + py * halfWidth)
       ..lineTo(newStart.dx - px * halfWidth, newStart.dy - py * halfWidth)
