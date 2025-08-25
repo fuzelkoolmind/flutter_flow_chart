@@ -58,7 +58,7 @@ class ArrowParams extends ChangeNotifier {
     this.tension = 1.0,
     this.startArrowPosition = Alignment.centerRight,
     this.endArrowPosition = Alignment.centerLeft,
-    this.clickableWidth = 20.0, // Added clickable width parameter
+    this.clickableWidth = 15.0, // Added clickable width parameter
   }) : _tailLength = tailLength;
 
   ///
@@ -78,7 +78,7 @@ class ArrowParams extends ChangeNotifier {
         map['endArrowPositionX'] as double,
         map['endArrowPositionY'] as double,
       ),
-      clickableWidth: map['clickableWidth'] as double? ?? 20.0,
+      clickableWidth: map['clickableWidth'] as double? ?? 15.0,
     );
   }
 
@@ -730,7 +730,10 @@ class ArrowPainter extends CustomPainter {
 
       final unitDirection = direction / length;
       final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
-      final halfWidth = params.clickableWidth / 2;
+      final halfWidth = params.clickableWidth / 2.5;
+//      final halfWidth = 3.5;
+
+      print('halfWidth Line: $halfWidth');
 
       // Create a rectangle around the line segment
       final rect = Path()
