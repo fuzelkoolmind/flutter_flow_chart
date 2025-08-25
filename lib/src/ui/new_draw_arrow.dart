@@ -217,6 +217,10 @@ class DrawingArrow extends ChangeNotifier {
 
 /// Draw arrow from [srcElement] to [destElement]
 /// using [arrowParams] parameters
+/// 
+/// This widget handles arrow connections between flow elements and ensures
+/// that existing connections don't interfere with new connection creation
+/// when in connection drawing mode.
 class DrawArrow extends StatefulWidget {
   ///
   DrawArrow({
@@ -341,12 +345,22 @@ class _DrawArrowState extends State<DrawArrow> {
   //   }
   // }
 
+  /// Handles line click events with proper connection drawing mode detection
+  /// 
+  /// This method ensures that existing connections cannot be clicked
+  /// while the user is trying to create new connections, preventing
+  /// interference between old and new connection creation.
   void _onLineClicked(Offset position) {
-    if (StreamBuilderUtils.isDragging.value) {
-      print('Click ignored - in connection drawing mode');
+    // Get the current dragging state to avoid race conditions
+    final isCurrentlyDragging = StreamBuilderUtils.isDragging.value;
+    
+    // Double-check if we're in connection drawing mode
+    if (isCurrentlyDragging) {
+      print('_onLineClicked: Click ignored - in connection drawing mode (value: $isCurrentlyDragging)');
       return;
     }
 
+    // Cancel any existing timers
     _colorTimer?.cancel();
     webTimer?.cancel();
 
@@ -413,9 +427,12 @@ class _DrawArrowState extends State<DrawArrow> {
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
       onTapDown: (TapDownDetails details) {
-        print('StreamBuilderUtils Value: ${StreamBuilderUtils.isDragging.value}');
-        if (StreamBuilderUtils.isDragging.value) {
-          print('Tap ignored - in connection drawing mode');
+        // Get the current dragging state to avoid race conditions
+        final isCurrentlyDragging = StreamBuilderUtils.isDragging.value;
+        
+        // Early return if in connection drawing mode
+        if (isCurrentlyDragging) {
+          print('GestureDetector: Tap ignored - in connection drawing mode (value: $isCurrentlyDragging)');
           return;
         }
 
@@ -694,16 +711,20 @@ class ArrowPainter extends CustomPainter {
 
   @override
   bool? hitTest(Offset position) {
-    // Create a wider invisible hit area along the line path
-
-    if (StreamBuilderUtils.isDragging.value) {
+    // Get the current dragging state to avoid race conditions
+    final isCurrentlyDragging = StreamBuilderUtils.isDragging.value;
+    
+    // If we're in connection drawing mode, completely disable hit testing on existing connections
+    // This prevents existing connections from interfering with new connection creation
+    if (isCurrentlyDragging) {
+      print('HitTest: Disabled - in connection drawing mode (value: $isCurrentlyDragging)');
       return false;
-    } else if (kIsWeb) {
-      if (webTimer != null) {
-        webTimer?.cancel();
-      }
     }
-    final hitTestPath = Path();
+    
+    // Cancel web timer if needed
+    if (kIsWeb && webTimer != null) {
+      webTimer?.cancel();
+    }
 
     // Get the line path points
     final points = <Offset>[];
@@ -744,11 +765,6 @@ class ArrowPainter extends CustomPainter {
         ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
         ..close();
 
-      // if (rect.contains(position)) {
-      //   onLinePressed?.call(position);
-      //   return true;
-      // }
-
       if(isPointOnMiddleLine(start: start, end: end, position: position, width: params.clickableWidth, cutStart: 30, cutEnd: 30)){
         onLinePressed?.call(position);
         return true;
@@ -767,6 +783,15 @@ class ArrowPainter extends CustomPainter {
     double cutStart = 30, // trim near the start box
     double cutEnd = 30,   // trim near the end box
   }) {
+    // Get the current dragging state to avoid race conditions
+    final isCurrentlyDragging = StreamBuilderUtils.isDragging.value;
+    
+    // Early return if in connection drawing mode
+    if (isCurrentlyDragging) {
+      print('isPointOnMiddleLine: Disabled - in connection drawing mode (value: $isCurrentlyDragging)');
+      return false;
+    }
+    
     // Direction vector
     final dx = end.dx - start.dx;
     final dy = end.dy - start.dy;
