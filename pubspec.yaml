@@ -25,5 +25,4 @@ dev_dependencies:
 flutter:
   assets:
     - assets/
-    - assets/in_progress.png
 
