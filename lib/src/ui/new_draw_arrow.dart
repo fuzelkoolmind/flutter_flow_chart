@@ -737,10 +737,10 @@ class ArrowPainter extends CustomPainter {
 
       // Create a rectangle around the line segment
       final rect = Path()
-        ..moveTo(start.dx + perpendicular.dx * halfWidth, (start.dy - 20.0) + perpendicular.dy * halfWidth)
-        ..lineTo(start.dx - perpendicular.dx * halfWidth, (start.dy - 20.0) - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx - perpendicular.dx * halfWidth, (end.dy - 20.0) - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx + perpendicular.dx * halfWidth, (end.dy - 20.0) + perpendicular.dy * halfWidth)
+        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
+        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
         ..close();
 
       if (rect.contains(position)) {
