@@ -199,6 +199,7 @@ class _ElementHandler extends StatelessWidget {
               'alignment': alignment,
             },
             child: GestureDetector(
+              behavior: HitTestBehavior.translucent, // important: allows clicks outside child
               onTapDown: (details) => tapDown = details.globalPosition - dashboard.position,
               onSecondaryTapDown: (details) => secondaryTapDown = details.globalPosition - dashboard.position,
               onTap: () {
@@ -233,13 +234,18 @@ class _ElementHandler extends StatelessWidget {
                   element,
                 );
               },
-              child: HandlerWidget(
-                width: handlerSize,
-                height: handlerSize,
+              child: Container(
+                width: handlerSize + 15,
+                height: handlerSize + 15,
+                alignment: alignment,
+                color: Colors.transparent,
+                child: HandlerWidget(
+                  width: handlerSize,
+                  height: handlerSize,
+                ),
               ),
             ),
-
-                        onDragUpdate: (details) {
+            onDragUpdate: (details) {
               if (!StreamBuilderUtils.isDragging.value) {
                 print('onDragUpdate Position: ${details.localPosition}');
                 StreamBuilderUtils.isDragging.add(true);
@@ -263,7 +269,6 @@ class _ElementHandler extends StatelessWidget {
               DrawingArrow.instance.reset();
               isDragging = false;
             },
-
           );
         },
       ),

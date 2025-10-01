@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// The arrow tip.
 class HandlerWidget extends StatelessWidget {
   ///
-   const HandlerWidget({
+  const HandlerWidget({
     required this.width,
     required this.height,
     super.key,
