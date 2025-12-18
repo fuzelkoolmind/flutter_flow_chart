@@ -72,23 +72,23 @@ class _ElementTextWidgetState extends State<ElementTextWidget> {
                   style: textStyle.copyWith(fontSize: 11.0),
                 ),
         ),
-        SizedBox(
-          height: widget.element.data == null ? 2.0 : 0.0,
-        ),
-        if (widget.element.data == null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: AutoSizeText(
-                  '${widget.element.duration.toString() ?? ''} days',
-                  textAlign: TextAlign.center,
-                  style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
-                ),
-              )
-            ],
-          ),
+        // SizedBox(
+        //   height: widget.element.data == null ? 2.0 : 0.0,
+        // ),
+        // if (widget.element.data == null)
+        //   Row(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     crossAxisAlignment: CrossAxisAlignment.center,
+        //     children: [
+        //       Expanded(
+        //         child: AutoSizeText(
+        //           '${widget.element.duration.toString() ?? ''} days',
+        //           textAlign: TextAlign.center,
+        //           style: textStyle.copyWith(fontSize: 8.0, color: Color(0xff6C7278)),
+        //         ),
+        //       )
+        //     ],
+        //   ),
         SizedBox(
           height: widget.element.data != null ? 2.0 : 0.0,
         ),
