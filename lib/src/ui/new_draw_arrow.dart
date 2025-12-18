@@ -83,8 +83,7 @@ class ArrowParams extends ChangeNotifier {
   }
 
   ///
-  factory ArrowParams.fromJson(String source) =>
-      ArrowParams.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ArrowParams.fromJson(String source) => ArrowParams.fromMap(json.decode(source) as Map<String, dynamic>);
 
   /// Arrow thickness.
   double thickness;
@@ -228,8 +227,7 @@ class DrawArrow extends StatefulWidget {
     super.key,
     ArrowParams? arrowParams,
     this.clickedColor = Colors.red, // Color when clicked
-    this.clickDuration =
-        const Duration(seconds: 3), // Duration to show clicked color
+    this.clickDuration = const Duration(seconds: 3), // Duration to show clicked color
   })  : arrowParams = arrowParams ?? ArrowParams(),
         pivots = PivotsNotifier(pivots);
 
@@ -354,7 +352,7 @@ class _DrawArrowState extends State<DrawArrow> {
     webTimer?.cancel();
 
     // How long the pointer must stay on the line before we treat it as a "long stay"
-    const holdDuration = Duration(seconds: 2);
+    const holdDuration = Duration(milliseconds: 800);
 
     // After the pointer has stayed on the line for [holdDuration],
     // we mark the line as clicked (red) and call the callback.
@@ -363,10 +361,8 @@ class _DrawArrowState extends State<DrawArrow> {
 
       setState(() => _isClicked = true);
 
-      print(
-          'Long stay on Line - Source: ${widget.srcElement.id}, Destination: ${widget.destElement.id}');
-      widget.connectionLinePressed(
-          widget.srcElement, widget.destElement, position);
+      print('Long stay on Line - Source: ${widget.srcElement.text}, Destination: ${widget.destElement.text}');
+      widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
 
       // Revert back after the configured clickDuration
       _colorTimer = Timer(widget.clickDuration, () {
@@ -386,30 +382,23 @@ class _DrawArrowState extends State<DrawArrow> {
     from = Offset(
       widget.srcElement.position.dx +
           widget.srcElement.handlerSize / 2.0 +
-          (widget.srcElement.size.width *
-              ((widget.arrowParams.startArrowPosition.x + 1) / 2)),
+          (widget.srcElement.size.width * ((widget.arrowParams.startArrowPosition.x + 1) / 2)),
       widget.srcElement.position.dy +
           widget.srcElement.handlerSize / 2.0 +
-          (widget.srcElement.size.height *
-              ((widget.arrowParams.startArrowPosition.y + 1) / 2)),
+          (widget.srcElement.size.height * ((widget.arrowParams.startArrowPosition.y + 1) / 2)),
     );
     to = Offset(
       widget.destElement.position.dx +
           widget.destElement.handlerSize / 2.0 +
-          (widget.destElement.size.width *
-              ((widget.arrowParams.endArrowPosition.x + 1) / 2)),
+          (widget.destElement.size.width * ((widget.arrowParams.endArrowPosition.x + 1) / 2)),
       widget.destElement.position.dy +
           widget.destElement.handlerSize / 2.0 +
-          (widget.destElement.size.height *
-              ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
+          (widget.destElement.size.height * ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
     );
 
-    direction = getOffsetDirection(
-        to, widget.destElement.position, widget.destElement.size);
+    direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
 
-    final currentArrowParams = _isClicked
-        ? widget.arrowParams.copyWith(color: widget.clickedColor)
-        : widget.arrowParams;
+    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
     //final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(thickness: 3.5) : widget.arrowParams;
 
     final arrowPainter = ArrowPainter(
@@ -688,9 +677,7 @@ class ArrowPainter extends CustomPainter {
     } else if (params.endArrowPosition.y < 0) {
       dy = -distance;
     }
-    final p3 = params.endArrowPosition == Alignment.center
-        ? Offset(to.dx, to.dy)
-        : Offset(to.dx + dx, to.dy + dy);
+    final p3 = params.endArrowPosition == Alignment.center ? Offset(to.dx, to.dy) : Offset(to.dx + dx, to.dy + dy);
     final p2 = Offset(
       p1.dx + (p3.dx - p1.dx) / 2,
       p1.dy + (p3.dy - p1.dy) / 2,
@@ -745,21 +732,17 @@ class ArrowPainter extends CustomPainter {
 
       final unitDirection = direction / length;
       final perpendicular = Offset(-unitDirection.dy, unitDirection.dx);
-      final halfWidth = params.clickableWidth / 2.5;
-//      final halfWidth = 3.5;
+      //final halfWidth = params.clickableWidth / 2.5;
+      final halfWidth = 3.5;
 
       print('halfWidth Line: $halfWidth');
 
       // Create a rectangle around the line segment
       final rect = Path()
-        ..moveTo(start.dx + perpendicular.dx * halfWidth,
-            start.dy + perpendicular.dy * halfWidth)
-        ..lineTo(start.dx - perpendicular.dx * halfWidth,
-            start.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx - perpendicular.dx * halfWidth,
-            end.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx + perpendicular.dx * halfWidth,
-            end.dy + perpendicular.dy * halfWidth)
+        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
+        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
         ..close();
 
       if (rect.contains(position)) {
@@ -862,9 +845,7 @@ class ArrowPainter extends CustomPainter {
     } else if (params.endArrowPosition.y < 0) {
       dy = -distance;
     }
-    final p3 = params.endArrowPosition == Alignment.center
-        ? Offset(to.dx, to.dy)
-        : Offset(to.dx + dx, to.dy + dy);
+    final p3 = params.endArrowPosition == Alignment.center ? Offset(to.dx, to.dy) : Offset(to.dx + dx, to.dy + dy);
     final p2 = Offset(
       p1.dx + (p3.dx - p1.dx) / 2,
       p1.dy + (p3.dy - p1.dy) / 2,
@@ -878,8 +859,7 @@ class ArrowPainter extends CustomPainter {
     return Offset(x, y);
   }
 
-  bool _isInsideBox(Offset position, FlowElement element,
-      {double margin = 10.0}) {
+  bool _isInsideBox(Offset position, FlowElement element, {double margin = 10.0}) {
     final rect = Rect.fromLTWH(
       element.position.dx,
       element.position.dy,
