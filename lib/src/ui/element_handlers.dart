@@ -199,9 +199,12 @@ class _ElementHandler extends StatelessWidget {
               'alignment': alignment,
             },
             child: GestureDetector(
-              behavior: HitTestBehavior.translucent, // important: allows clicks outside child
-              onTapDown: (details) => tapDown = details.globalPosition - dashboard.position,
-              onSecondaryTapDown: (details) => secondaryTapDown = details.globalPosition - dashboard.position,
+              behavior: HitTestBehavior
+                  .translucent, // important: allows clicks outside child
+              onTapDown: (details) =>
+                  tapDown = details.globalPosition - dashboard.position,
+              onSecondaryTapDown: (details) => secondaryTapDown =
+                  details.globalPosition - dashboard.position,
               onTap: () {
                 onHandlerPressed?.call(
                   context,
@@ -238,7 +241,7 @@ class _ElementHandler extends StatelessWidget {
                 width: handlerSize + 15,
                 height: handlerSize + 15,
                 alignment: alignment,
-                color: Colors.transparent,
+                color: Colors.red,
                 child: HandlerWidget(
                   width: handlerSize,
                   height: handlerSize,
@@ -256,11 +259,14 @@ class _ElementHandler extends StatelessWidget {
                   startArrowPosition: alignment,
                   endArrowPosition: Alignment.center,
                 );
-                DrawingArrow.instance.from = details.globalPosition - dashboard.position;
+                DrawingArrow.instance.from =
+                    details.globalPosition - dashboard.position;
                 isDragging = true;
               }
               DrawingArrow.instance.setTo(
-                details.globalPosition - dashboard.position + dashboard.handlerFeedbackOffset,
+                details.globalPosition -
+                    dashboard.position +
+                    dashboard.handlerFeedbackOffset,
               );
             },
             onDragEnd: (details) {
