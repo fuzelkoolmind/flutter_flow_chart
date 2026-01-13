@@ -243,7 +243,7 @@ class _ElementHandler extends StatelessWidget {
                     ? handlerSize + 2
                     : handlerSize + 15,
                 alignment: alignment,
-                //color: Colors.red,
+                color: Colors.transparent,
                 child: HandlerWidget(
                   width: handlerSize,
                   height: handlerSize,
