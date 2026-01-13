@@ -239,9 +239,11 @@ class _ElementHandler extends StatelessWidget {
               },
               child: Container(
                 width: handlerSize + 15,
-                height: handlerSize + 15,
+                height: alignment == Alignment.topCenter
+                    ? handlerSize + 2
+                    : handlerSize + 15,
                 alignment: alignment,
-                color: Colors.red,
+                //color: Colors.red,
                 child: HandlerWidget(
                   width: handlerSize,
                   height: handlerSize,
