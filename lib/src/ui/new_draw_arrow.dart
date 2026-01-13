@@ -2,7 +2,6 @@ import 'dart:async'; // Add this import for Timer
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_flow_chart/flutter_flow_chart.dart';
 import 'package:flutter_flow_chart/src/ui/segment_handler.dart';
@@ -44,8 +43,6 @@ import 'package:flutter_flow_chart/src/utils/stream_builder.dart';
 //   rectangular,
 // }
 
-Timer? webTimer;
-
 /// Arrow parameters used by [DrawArrow] widget
 class ArrowParams extends ChangeNotifier {
   ///
@@ -83,7 +80,8 @@ class ArrowParams extends ChangeNotifier {
   }
 
   ///
-  factory ArrowParams.fromJson(String source) => ArrowParams.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ArrowParams.fromJson(String source) =>
+      ArrowParams.fromMap(json.decode(source) as Map<String, dynamic>);
 
   /// Arrow thickness.
   double thickness;
@@ -227,7 +225,8 @@ class DrawArrow extends StatefulWidget {
     super.key,
     ArrowParams? arrowParams,
     this.clickedColor = Colors.red, // Color when clicked
-    this.clickDuration = const Duration(seconds: 3), // Duration to show clicked color
+    this.clickDuration =
+        const Duration(seconds: 3), // Duration to show clicked color
   })  : arrowParams = arrowParams ?? ArrowParams(),
         pivots = PivotsNotifier(pivots);
 
@@ -265,6 +264,8 @@ class DrawArrow extends StatefulWidget {
 class _DrawArrowState extends State<DrawArrow> {
   bool _isClicked = false;
   Timer? _colorTimer;
+  Timer? _webTimer; // Instance-specific timer instead of global
+  StreamSubscription<bool>? _dragSubscription;
 
   @override
   void initState() {
@@ -272,12 +273,25 @@ class _DrawArrowState extends State<DrawArrow> {
     widget.srcElement.addListener(_elementChanged);
     widget.destElement.addListener(_elementChanged);
     widget.pivots.addListener(_elementChanged);
+
+    // Listen to drag state changes to cancel timers when drag starts
+    _dragSubscription = StreamBuilderUtils.isDragging.listen((isDragging) {
+      if (isDragging) {
+        // Cancel all timers when drag starts
+        _colorTimer?.cancel();
+        _webTimer?.cancel();
+        if (mounted && _isClicked) {
+          setState(() => _isClicked = false);
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
     _colorTimer?.cancel();
-    webTimer?.cancel();
+    _webTimer?.cancel();
+    _dragSubscription?.cancel();
     widget.srcElement.removeListener(_elementChanged);
     widget.destElement.removeListener(_elementChanged);
     widget.pivots.removeListener(_elementChanged);
@@ -342,6 +356,7 @@ class _DrawArrowState extends State<DrawArrow> {
   // }
 
   void _onLineClicked(Offset position) {
+    // Double check - if dragging, don't proceed
     if (StreamBuilderUtils.isDragging.value) {
       print('Click ignored - in connection drawing mode');
       return;
@@ -349,24 +364,29 @@ class _DrawArrowState extends State<DrawArrow> {
 
     // Cancel any existing timers before scheduling a new "hold" detection
     _colorTimer?.cancel();
-    webTimer?.cancel();
+    _webTimer?.cancel();
 
     // How long the pointer must stay on the line before we treat it as a "long stay"
     const holdDuration = Duration(milliseconds: 800);
 
     // After the pointer has stayed on the line for [holdDuration],
     // we mark the line as clicked (red) and call the callback.
-    webTimer = Timer(holdDuration, () {
-      if (!mounted) return;
+    _webTimer = Timer(holdDuration, () {
+      // Check again if dragging started during the wait period
+      if (!mounted || StreamBuilderUtils.isDragging.value) {
+        return;
+      }
 
       setState(() => _isClicked = true);
 
-      print('Long stay on Line - Source: ${widget.srcElement.text}, Destination: ${widget.destElement.text}');
-      widget.connectionLinePressed(widget.srcElement, widget.destElement, position);
+      print(
+          'Long stay on Line - Source: ${widget.srcElement.text}, Destination: ${widget.destElement.text}');
+      widget.connectionLinePressed(
+          widget.srcElement, widget.destElement, position);
 
       // Revert back after the configured clickDuration
       _colorTimer = Timer(widget.clickDuration, () {
-        if (mounted) {
+        if (mounted && !StreamBuilderUtils.isDragging.value) {
           setState(() => _isClicked = false);
         }
       });
@@ -382,23 +402,30 @@ class _DrawArrowState extends State<DrawArrow> {
     from = Offset(
       widget.srcElement.position.dx +
           widget.srcElement.handlerSize / 2.0 +
-          (widget.srcElement.size.width * ((widget.arrowParams.startArrowPosition.x + 1) / 2)),
+          (widget.srcElement.size.width *
+              ((widget.arrowParams.startArrowPosition.x + 1) / 2)),
       widget.srcElement.position.dy +
           widget.srcElement.handlerSize / 2.0 +
-          (widget.srcElement.size.height * ((widget.arrowParams.startArrowPosition.y + 1) / 2)),
+          (widget.srcElement.size.height *
+              ((widget.arrowParams.startArrowPosition.y + 1) / 2)),
     );
     to = Offset(
       widget.destElement.position.dx +
           widget.destElement.handlerSize / 2.0 +
-          (widget.destElement.size.width * ((widget.arrowParams.endArrowPosition.x + 1) / 2)),
+          (widget.destElement.size.width *
+              ((widget.arrowParams.endArrowPosition.x + 1) / 2)),
       widget.destElement.position.dy +
           widget.destElement.handlerSize / 2.0 +
-          (widget.destElement.size.height * ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
+          (widget.destElement.size.height *
+              ((widget.arrowParams.endArrowPosition.y + 1) / 2)),
     );
 
-    direction = getOffsetDirection(to, widget.destElement.position, widget.destElement.size);
+    direction = getOffsetDirection(
+        to, widget.destElement.position, widget.destElement.size);
 
-    final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(color: widget.clickedColor) : widget.arrowParams;
+    final currentArrowParams = _isClicked
+        ? widget.arrowParams.copyWith(color: widget.clickedColor)
+        : widget.arrowParams;
     //final currentArrowParams = _isClicked ? widget.arrowParams.copyWith(thickness: 3.5) : widget.arrowParams;
 
     final arrowPainter = ArrowPainter(
@@ -677,7 +704,9 @@ class ArrowPainter extends CustomPainter {
     } else if (params.endArrowPosition.y < 0) {
       dy = -distance;
     }
-    final p3 = params.endArrowPosition == Alignment.center ? Offset(to.dx, to.dy) : Offset(to.dx + dx, to.dy + dy);
+    final p3 = params.endArrowPosition == Alignment.center
+        ? Offset(to.dx, to.dy)
+        : Offset(to.dx + dx, to.dy + dy);
     final p2 = Offset(
       p1.dx + (p3.dx - p1.dx) / 2,
       p1.dy + (p3.dy - p1.dy) / 2,
@@ -696,12 +725,9 @@ class ArrowPainter extends CustomPainter {
 
   @override
   bool? hitTest(Offset position) {
+    // If dragging, immediately return false without any timer operations
     if (StreamBuilderUtils.isDragging.value) {
       return false;
-    } else if (kIsWeb) {
-      if (webTimer != null) {
-        webTimer?.cancel();
-      }
     }
 
     // Get the line path points
@@ -739,10 +765,14 @@ class ArrowPainter extends CustomPainter {
 
       // Create a rectangle around the line segment
       final rect = Path()
-        ..moveTo(start.dx + perpendicular.dx * halfWidth, start.dy + perpendicular.dy * halfWidth)
-        ..lineTo(start.dx - perpendicular.dx * halfWidth, start.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx - perpendicular.dx * halfWidth, end.dy - perpendicular.dy * halfWidth)
-        ..lineTo(end.dx + perpendicular.dx * halfWidth, end.dy + perpendicular.dy * halfWidth)
+        ..moveTo(start.dx + perpendicular.dx * halfWidth,
+            start.dy + perpendicular.dy * halfWidth)
+        ..lineTo(start.dx - perpendicular.dx * halfWidth,
+            start.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx - perpendicular.dx * halfWidth,
+            end.dy - perpendicular.dy * halfWidth)
+        ..lineTo(end.dx + perpendicular.dx * halfWidth,
+            end.dy + perpendicular.dy * halfWidth)
         ..close();
 
       if (rect.contains(position)) {
@@ -845,7 +875,9 @@ class ArrowPainter extends CustomPainter {
     } else if (params.endArrowPosition.y < 0) {
       dy = -distance;
     }
-    final p3 = params.endArrowPosition == Alignment.center ? Offset(to.dx, to.dy) : Offset(to.dx + dx, to.dy + dy);
+    final p3 = params.endArrowPosition == Alignment.center
+        ? Offset(to.dx, to.dy)
+        : Offset(to.dx + dx, to.dy + dy);
     final p2 = Offset(
       p1.dx + (p3.dx - p1.dx) / 2,
       p1.dy + (p3.dy - p1.dy) / 2,
@@ -859,7 +891,8 @@ class ArrowPainter extends CustomPainter {
     return Offset(x, y);
   }
 
-  bool _isInsideBox(Offset position, FlowElement element, {double margin = 10.0}) {
+  bool _isInsideBox(Offset position, FlowElement element,
+      {double margin = 10.0}) {
     final rect = Rect.fromLTWH(
       element.position.dx,
       element.position.dy,
