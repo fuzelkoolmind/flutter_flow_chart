@@ -21,6 +21,7 @@ class DraggableFlowElement extends StatefulWidget {
 class _DraggableFlowElementState extends State<DraggableFlowElement> {
   late Offset delta;
   double _scale = 1.0;
+  Color? _originalBorderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +46,10 @@ class _DraggableFlowElementState extends State<DraggableFlowElement> {
           child: widget.child,
         ),
         onDragStarted: () {
+          // Store original border color
+          _originalBorderColor = widget.element.borderColor;
+          // Change border color to blue during dragging
+          widget.element.setBorderColor(Colors.blue);
           setState(() => _scale = 0.9);
         },
         onDragUpdate: (details) {
@@ -56,6 +61,10 @@ class _DraggableFlowElementState extends State<DraggableFlowElement> {
           }
         },
         onDragEnd: (details) {
+          // Restore original border color
+          if (_originalBorderColor != null) {
+            widget.element.setBorderColor(_originalBorderColor!);
+          }
           setState(() => _scale = 1.0);
           widget.element.changePosition(
             details.offset - widget.dashboard.position,
@@ -63,6 +72,10 @@ class _DraggableFlowElementState extends State<DraggableFlowElement> {
           StreamBuilderUtils.isDragging.add(false);
         },
         onDraggableCanceled: (velocity, offset) {
+          // Restore original border color
+          if (_originalBorderColor != null) {
+            widget.element.setBorderColor(_originalBorderColor!);
+          }
           setState(() => _scale = 1.0);
         },
       ),
